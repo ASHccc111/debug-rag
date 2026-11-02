@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Debug 研发知识助手</title>
+  <style>
+    :root{color-scheme:light;font:16px/1.65 system-ui,"Microsoft YaHei",sans-serif;color:#172b38;background:#f4f6f8}
+    *{box-sizing:border-box}body{margin:0}main{max-width:1040px;margin:40px auto;padding:0 22px}
+    h1{font-size:30px;line-height:1.3;margin-bottom:8px}h2{font-size:20px}h3{font-size:17px}
+    p{margin:10px 0}.muted{color:#526574}.tag{display:inline-block;background:#dfeef0;color:#175665;border-radius:5px;padding:3px 9px;font-size:13px}
+    section{background:white;border:1px solid #d9e1e7;border-radius:10px;padding:24px;margin-top:20px}
+    label{display:block;font-weight:600}input,textarea{display:block;width:100%;font:inherit;padding:10px;border:1px solid #9badb9;border-radius:6px;margin:6px 0 14px;background:white;color:inherit}
+    textarea{min-height:110px;resize:vertical}input{max-width:350px}button{font:inherit;cursor:pointer;border:1px solid #176678;background:white;color:#145d6d;border-radius:6px;padding:9px 16px;margin-right:10px}
+    .option{font-weight:400;margin:12px 0}.option input{display:inline;width:auto;margin:0 8px 0 0}
+    button.primary{background:#176678;color:white}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible{outline:3px solid #c87c00;outline-offset:3px}
+    .error{color:#a02727;white-space:pre-wrap}.answer{white-space:pre-wrap}.source{border-top:1px solid #e1e6ea;padding:16px 0}
+    .source:first-child{border:0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7f9;padding:14px;font:14px/1.7 ui-monospace,monospace}
+    summary{cursor:pointer;color:#145d6d}dialog{width:min(850px,94vw);max-height:85vh;border:1px solid #9badb9;border-radius:10px;padding:24px}dialog::backdrop{background:#172b3870}
+    @media(max-width:600px){main{margin-top:24px}section{padding:16px}h1{font-size:25px}button{margin-bottom:8px}}
+  </style>
+</head>
+<body><main>
+  <span class="tag">本机演示 · 独立模拟资料</span>
+  <h1>Debug 研发知识助手</h1>
+  <p class="muted">检索调试功能资料，查看步骤与原文依据。当前演示使用独立模拟资料。</p>
+  <section aria-labelledby="query-title">
+    <h2 id="query-title">先描述一个具体问题</h2>
+    <p id="status" class="muted" aria-live="polite">正在读取知识库状态…</p>
+    <form id="form">
+      <label for="kb">知识库</label><input id="kb" value="demo-debug" required maxlength="100">
+      <label for="question">问题（单轮，最多 300 字）</label>
+      <textarea id="question" required maxlength="300" placeholder="例如：如何在调试页展示相机状态，并验证退出后的清理？"></textarea>
+      <button type="submit" id="search">仅检索原文 · 本地</button>
+      <button type="button" id="preview">查看生成证据 · 本地</button>
+      <button type="button" id="advanced">增强检索 · 需 API</button>
+      <label class="option"><input id="allow-remote" type="checkbox">本次允许远程向量编码费用（仅远程索引需要）</label>
+      <button type="button" id="remote-search" hidden>远程混合检索 · 可能计费</button>
+      <button type="button" id="remote-preview" hidden>远程证据预览 · 可能计费</button>
+      <label class="option"><input id="enhanced" type="checkbox">生成回答时使用已配置的改写与重排（可能计费）</label>
+      <button type="button" id="ask" class="primary">生成带引用的回答</button>
+    </form>
+    <p class="muted">本地检索与本地证据预览不调用付费模型。远程索引检索需要编码问题，需单独允许费用。改写和重排未配置或失败时，轨迹会说明回退原因。当前保持单轮问答。</p>
+    <p id="notice" role="status"></p>
+  </section>
+  <section aria-labelledby="maintenance-title">
+    <h2 id="maintenance-title">知识库维护</h2>
+    <p class="muted">根据上次导入的完整资料重建并发布本地索引。新增、替换或移除资料后，先通过 CLI 重新导入。失败或中断时保留原来已发布的知识库。</p>
+    <button type="button" id="build">重建并发布本地索引</button>
+    <p id="job-notice" role="status" class="muted"></p>
+    <div id="jobs"></div>
+  </section>
+  <section id="result" hidden aria-live="polite"><h2 id="result-title">结果</h2>
+    <p id="answer" class="answer"></p><p id="limitation" class="muted"></p>
+    <div id="sources"></div>
+    <details><summary>查看检索轨迹与运行记录</summary><pre id="trace"></pre></details>
+  </section>
+  <p class="muted">“已交付”仅表示模拟版本能力；检索分数不是答案正确概率。<a href="/docs">API 文档</a></p>
+</main>
+<dialog id="source-dialog"><button id="close-dialog">关闭</button><h2 id="source-title">引用原文</h2><pre id="source-text"></pre></dialog>
+<script>
+  const $ = id => document.getElementById(id);
+  let remoteIndex=false, jobTimer, jobsActive=false, displayedGeneration=null, displayedKb=null;
+  const actionIds=['search','ask','preview','advanced','remote-search','remote-preview'];
+  async function api(url, body){
+    let response;
+    try {
+      response = await fetch(url,body ? {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)} : {});
+    } catch {
+      throw new Error('连接不到本机后端（127.0.0.1:8001）。请运行 scripts/start-local.ps1 启动服务，再刷新页面。');
+    }
+    let data;
+    try { data = await response.json(); }
+    catch { throw new Error(`后端返回了无法解析的响应（HTTP ${response.status}），请检查服务日志。`); }
+    if(!response.ok) throw new Error(data.error?.message || `请求失败（${response.status}）`);
+    return data;
+  }
+  async function refresh(){
+    try{
+      const state = await api('/api/v1/status?kb_id='+encodeURIComponent($('kb').value));
+      if(displayedGeneration&&(displayedGeneration!==state.generation_id||displayedKb!==state.kb_id)){
+        $('result').hidden=true;displayedGeneration=null;
+        $('notice').textContent='知识库或资料版本已更新，请重新检索以获取当前证据。';
+      }
+      remoteIndex=state.retrieval_profile==='hybrid'||state.embedding_backend==='viking';
+      $('search').disabled=$('preview').disabled=remoteIndex;
+      $('remote-search').hidden=$('remote-preview').hidden=!remoteIndex;
+      $('build').disabled=!state.maintenance_enabled;
+      $('job-notice').textContent=state.maintenance_enabled?'本地构建不调用付费模型。':'当前配置使用远程编码；请通过 CLI 显式允许费用后构建，页面不会启动收费构建。';
+      $('status').textContent = state.index_published
+        ? `已发布 ${state.app_snapshot} · ${state.data_kind} · ${remoteIndex?'远程 dense/sparse':'本地向量＋BM25'} · 生成${state.generation_configured?'已配置（尚需实际验证）':'未配置或关闭'} · 本月记账 ${state.budget.accounted_upper_bound_cny} / ${state.budget.limit_cny} 元`
+        : '知识库还未发布索引，请先导入完整资料并构建。';
+      await refreshJobs();
+    }catch(error){$('status').textContent=error.message;}
+  }
+  async function showSource(data, row){
+    try{
+      const path = `/api/v1/sources/${encodeURIComponent(data.generation_id)}/${encodeURIComponent(row.chunk_id)}?kb_id=${encodeURIComponent(data.kb_id)}`;
+      const source=await api(path);
+      $('source-title').textContent=source.metadata.title;
+      $('source-text').textContent=`${source.section_path.join(' / ')}\n行 ${source.start_line}–${source.end_line}；字符 [${source.start_char}, ${source.end_char})\nrevision ${source.revision_id}\n\n${source.text}`;
+      $('source-dialog').showModal();
+    }catch(error){$('notice').textContent=error.message;}
+  }
+  async function run(mode, remote=false){
+    if(!$('form').reportValidity()) return;
+    if(remoteIndex&&!remote&&(mode==='search'||mode==='context')){$('notice').textContent='当前是远程索引，请使用标明可能计费的检索或证据预览按钮。';return;}
+    if((remote||remoteIndex)&&!$('allow-remote').checked){$('notice').textContent='远程索引需要付费编码问题，请先勾选本次允许费用。';return;}
+    for(const id of actionIds) $(id).disabled=true;
+    $('notice').className='muted';$('notice').textContent='正在处理…首次加载本地模型可能较慢。';
+    $('result').hidden=true;
+    try{
+      const body={kb_id:$('kb').value,question:$('question').value,allow_paid:remote||(remoteIndex&&(mode==='chat'||mode==='search/advanced'))};
+      if(mode==='chat') body.enhanced=$('enhanced').checked;
+      const data=await api('/api/v1/'+mode,body);
+      displayedGeneration=data.generation_id;displayedKb=data.kb_id;
+      const isSearch=mode==='search'||mode==='search/advanced';
+      $('result-title').textContent=isSearch?'检索原文（尚未生成答案）':mode==='context'?`生成证据预览（${remote?'远程编码':'本地'}）`:`回答 · ${data.status}`;
+      $('answer').textContent=data.answer || (isSearch?`找到 ${data.candidates.length} 个候选，以下展示前 5 个。`:`已按预算选出 ${data.context.length} 段原文证据，未调用生成模型。`);
+      $('limitation').textContent=data.limitation || '';
+      $('sources').replaceChildren();
+      const rows=isSearch?data.candidates.slice(0,5):data.context;
+      for(const row of rows){
+        const card=document.createElement('div');card.className='source';
+        const title=document.createElement('h3');title.textContent=`${row.evidence_id?'['+row.evidence_id+'] ':''}${row.metadata.title}`;
+        const meta=document.createElement('p');meta.className='muted';meta.textContent=`${row.section_path.join(' / ')} · ${row.metadata.app_snapshot} · ${row.metadata.data_kind} · ${row.metadata.feature_status} · 行 ${row.start_line}–${row.end_line}${row.context_expansion==='parent'?' · 已扩展父章节':row.context_expansion==='child_fallback'?' · 父章节超限，使用命中片段':''}`;
+        const text=document.createElement('pre');text.textContent=row.text;
+        const button=document.createElement('button');button.textContent='查看引用位置';button.onclick=()=>showSource(data,row);
+        card.append(title,meta,text,button);$('sources').append(card);
+      }
+      $('trace').textContent=JSON.stringify({generation_id:data.generation_id,...data.trace,api_calls:data.api_calls || []},null,2);
+      $('result').hidden=false;$('notice').textContent=data.trace?.degraded?'部分增强步骤未执行成功，已回退；请查看轨迹中的原因。':'处理完成。';
+    }catch(error){$('notice').className='error';$('notice').textContent=error.message;}
+    finally{for(const id of actionIds) $(id).disabled=false;await refresh();}
+  }
+  const jobLabels={pending:'等待执行',running:'正在构建',succeeded:'已发布',failed:'构建失败',interrupted:'执行中断'};
+  const stageLabels={queued:'等待执行',preparing:'准备资料',encoding:'编码文本',vector_write:'写入向量',validating:'校验索引',publishing:'发布索引',published:'发布完成',failed:'失败',interrupted:'已中断'};
+  async function refreshJobs(){
+    clearTimeout(jobTimer);
+    try{
+      const data=await api('/api/v1/index-jobs?kb_id='+encodeURIComponent($('kb').value));
+      $('jobs').replaceChildren();
+      for(const job of data.jobs){
+        const row=document.createElement('div');row.className='source';
+        const timestamp=new Date(job.created_at).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',hour12:false})+'（北京时间）';
+        const label=document.createElement('p');label.textContent=`${jobLabels[job.status]||job.status} · ${stageLabels[job.stage]||job.stage} · ${timestamp}${job.error_message?' · '+job.error_message:''}`;
+        row.append(label);
+        if(job.retryable){const retry=document.createElement('button');retry.textContent='重新构建';retry.disabled=$('build').disabled;retry.onclick=()=>startJob(job.job_id);row.append(retry);}
+        $('jobs').append(row);
+      }
+      if(!data.jobs.length)$('jobs').textContent='暂无维护任务。';
+      const wasActive=jobsActive;
+      jobsActive=data.jobs.some(job=>job.status==='pending'||job.status==='running');
+      if(jobsActive) jobTimer=setTimeout(refreshJobs,1500);
+      else if(wasActive) await refresh();
+    }catch(error){$('job-notice').textContent=error.message;}
+  }
+  async function startJob(retryId){
+    $('build').disabled=true;
+    try{
+      await api(retryId?`/api/v1/index-jobs/${encodeURIComponent(retryId)}/retry`:'/api/v1/index-jobs',retryId?{}:{kb_id:$('kb').value});
+      $('job-notice').textContent='任务已保存，可查看执行阶段；服务中断后会保留中断记录。';
+      await refreshJobs();
+    }catch(error){$('job-notice').textContent=error.message;}
+    finally{$('build').disabled=remoteIndex;}
+  }
+  $('form').onsubmit=event=>{event.preventDefault();run('search');};
+  $('ask').onclick=()=>run('chat');$('kb').onchange=refresh;
+  $('preview').onclick=()=>run('context');
+  $('advanced').onclick=()=>run('search/advanced');
+  $('remote-search').onclick=()=>run('search',true);
+  $('remote-preview').onclick=()=>run('context',true);
+  $('build').onclick=()=>startJob();
+  $('close-dialog').onclick=()=>$('source-dialog').close();refresh();
+</script></body></html>

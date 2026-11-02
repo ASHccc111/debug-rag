@@ -1,0 +1,9 @@
+{
+  "source_key": "demo-lifecycle",
+  "title": "DemoDebug 生命周期补充",
+  "app_snapshot": "demo-v1",
+  "data_kind": "simulated",
+  "feature_status": "delivered",
+  "updated_at": "2026-10-25",
+  "external_processing_allowed": true
+}
