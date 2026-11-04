@@ -1,0 +1,219 @@
+{
+  "documents": [
+    {
+      "number": 0,
+      "file": "00_Debug 技术资料导读与版本范围.docx",
+      "pages": 5,
+      "characters": 4904,
+      "native_pdf": false
+    },
+    {
+      "number": 1,
+      "file": "01_Debug 当前能力与功能边界.docx",
+      "pages": 2,
+      "characters": 2105,
+      "native_pdf": false
+    },
+    {
+      "number": 2,
+      "file": "02_Debug 入口 SPI 与初始化契约.docx",
+      "pages": 2,
+      "characters": 2296,
+      "native_pdf": false
+    },
+    {
+      "number": 3,
+      "file": "03_Debug 运行时装配与资源生命周期.docx",
+      "pages": 2,
+      "characters": 2028,
+      "native_pdf": false
+    },
+    {
+      "number": 4,
+      "file": "04_Debug 主面板与测试环境操作.docx",
+      "pages": 2,
+      "characters": 2026,
+      "native_pdf": false
+    },
+    {
+      "number": 5,
+      "file": "05_手机性能采样机制与指标解释.docx",
+      "pages": 2,
+      "characters": 1618,
+      "native_pdf": false
+    },
+    {
+      "number": 6,
+      "file": "06_手机性能数据源与通用字段.docx",
+      "pages": 2,
+      "characters": 1944,
+      "native_pdf": false
+    },
+    {
+      "number": 7,
+      "file": "07_相机状态事件采集与快照转换.docx",
+      "pages": 2,
+      "characters": 1910,
+      "native_pdf": false
+    },
+    {
+      "number": 8,
+      "file": "08_相机媒体模式与录像状态说明.docx",
+      "pages": 2,
+      "characters": 2757,
+      "native_pdf": false
+    },
+    {
+      "number": 9,
+      "file": "09_相机系统电池与设备身份说明.docx",
+      "pages": 3,
+      "characters": 3177,
+      "native_pdf": false
+    },
+    {
+      "number": 10,
+      "file": "10_相机版本连接标记与能力说明.docx",
+      "pages": 3,
+      "characters": 3800,
+      "native_pdf": false
+    },
+    {
+      "number": 11,
+      "file": "11_相机详情页面与文本复制.docx",
+      "pages": 2,
+      "characters": 1758,
+      "native_pdf": false
+    },
+    {
+      "number": 12,
+      "file": "12_设备数据源字段注册与接收契约.docx",
+      "pages": 2,
+      "characters": 2421,
+      "native_pdf": false
+    },
+    {
+      "number": 13,
+      "file": "13_实时状态缓存与并发通知.docx",
+      "pages": 2,
+      "characters": 1666,
+      "native_pdf": false
+    },
+    {
+      "number": 14,
+      "file": "14_展示字段配置与选择交互.docx",
+      "pages": 2,
+      "characters": 1901,
+      "native_pdf": false
+    },
+    {
+      "number": 15,
+      "file": "15_应用内悬浮窗行为与生命周期.docx",
+      "pages": 2,
+      "characters": 1685,
+      "native_pdf": false
+    },
+    {
+      "number": 16,
+      "file": "16_可操作控件热区检测.docx",
+      "pages": 2,
+      "characters": 1735,
+      "native_pdf": false
+    },
+    {
+      "number": 17,
+      "file": "17_现场数据收集与 ZIP 组织.docx",
+      "pages": 2,
+      "characters": 2075,
+      "native_pdf": false
+    },
+    {
+      "number": 18,
+      "file": "18_导出页面系统分享与失败处理.docx",
+      "pages": 2,
+      "characters": 1882,
+      "native_pdf": false
+    },
+    {
+      "number": 19,
+      "file": "19_宿主能力适配与跨 App 接入边界.docx",
+      "pages": 2,
+      "characters": 2049,
+      "native_pdf": false
+    },
+    {
+      "number": 20,
+      "file": "20_Debug 扩展维护与问题定位.docx",
+      "pages": 2,
+      "characters": 1748,
+      "native_pdf": false
+    },
+    {
+      "number": 21,
+      "file": "21_Flavor 编译隔离与构建核验.docx",
+      "pages": 2,
+      "characters": 2139,
+      "native_pdf": false
+    },
+    {
+      "number": 22,
+      "file": "22_Debug 验证计划与验收记录要求.docx",
+      "pages": 2,
+      "characters": 1811,
+      "native_pdf": false
+    },
+    {
+      "number": 23,
+      "file": "23_Debug 二期建设目标与实施约束.docx",
+      "pages": 2,
+      "characters": 1638,
+      "native_pdf": false
+    },
+    {
+      "number": 24,
+      "file": "24_Debug 当前架构与调用关系图解.pdf",
+      "pages": 4,
+      "characters": 2475,
+      "native_pdf": true
+    },
+    {
+      "number": 25,
+      "file": "25_设备字段更新与悬浮窗刷新图解.pdf",
+      "pages": 3,
+      "characters": 2282,
+      "native_pdf": true
+    },
+    {
+      "number": 26,
+      "file": "26_现场导出与系统分享流程图解.pdf",
+      "pages": 3,
+      "characters": 1934,
+      "native_pdf": true
+    },
+    {
+      "number": 27,
+      "file": "27_Debug 二期目标架构与能力流程.pdf",
+      "pages": 4,
+      "characters": 1764,
+      "native_pdf": true
+    },
+    {
+      "number": 28,
+      "file": "28_一期现状与二期迁移对照.pdf",
+      "pages": 3,
+      "characters": 2265,
+      "native_pdf": true
+    },
+    {
+      "number": 29,
+      "file": "29_相机字段标签与格式化参考.pdf",
+      "pages": 12,
+      "characters": 15508,
+      "native_pdf": true
+    }
+  ],
+  "pages": 82,
+  "characters": 79301,
+  "native_docx_render": "unavailable: bundled LibreOffice absent; OOXML content preview used",
+  "images": 82,
+  "sheets": 21
+}
