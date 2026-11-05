@@ -1,0 +1,701 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "debug-business-v1",
+  "dataset_status": "draft",
+  "created_at": "2026-11-05T17:59:38.829782+08:00",
+  "expected_document_count": 30,
+  "actual_document_count": 30,
+  "missing_files": [],
+  "unreadable_files": [],
+  "corpus_digest": "74a89c02281a9f4d3fe5250ba8ecbb47102b088ba0e2534987e6ad640519a75a",
+  "documents": [
+    {
+      "doc_id": "DOC-00",
+      "file": "docx/00_Debug 技术资料导读与版本范围.docx",
+      "title": "Debug 技术资料导读与版本范围",
+      "format": "docx",
+      "sha256": "7309dd7a302ade40b93c484b12a022520794e3d6acb41df5a42144eaaea3dc17",
+      "byte_size": 42238,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-00-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-00-B000005",
+          "quote": "源码基线为 OBSBOT_Live 的 p/caijiamin/feat_debug_2th 分支，提交 9010928ca51c6e766f75414c49c748338e0b7ecb。整理日期为 2026 年 11 月 3 日。主体范围是 business/debug，App 的 withDebug 初始化、Manifest 与 Gradle 变体配置作为接入边界一并记录。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-01",
+      "file": "docx/01_Debug 当前能力与功能边界.docx",
+      "title": "Debug 当前能力与功能边界",
+      "format": "docx",
+      "sha256": "ba50dbfaea5dc7b848006e24ca30f04e3bf4682c8abdd3a8ab00409f71f51ff1",
+      "byte_size": 40526,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-01-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-02",
+      "file": "docx/02_Debug 入口 SPI 与初始化契约.docx",
+      "title": "Debug 入口 SPI 与初始化契约",
+      "format": "docx",
+      "sha256": "972fc64721d880085dc025007f5f91f7282e3b1c815cf9d515a7b00740f7da68",
+      "byte_size": 39621,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-02-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-03",
+      "file": "docx/03_Debug 运行时装配与资源生命周期.docx",
+      "title": "Debug 运行时装配与资源生命周期",
+      "format": "docx",
+      "sha256": "2f693f299c682165504d9e5447bff51866445720e4f7faafe783a257d4daa4ec",
+      "byte_size": 39685,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-03-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-04",
+      "file": "docx/04_Debug 主面板与测试环境操作.docx",
+      "title": "Debug 主面板与测试环境操作",
+      "format": "docx",
+      "sha256": "c832f8f18d3ad2ac2392915d4f38ce31558daae132390f396069675248cf6d8d",
+      "byte_size": 39991,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-04-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-05",
+      "file": "docx/05_手机性能采样机制与指标解释.docx",
+      "title": "手机性能采样机制与指标解释",
+      "format": "docx",
+      "sha256": "bf61702a94ceb6fe6152572945ac0aaacbc47a33b1a2d6f774089227b60554f6",
+      "byte_size": 39544,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-05-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-06",
+      "file": "docx/06_手机性能数据源与通用字段.docx",
+      "title": "手机性能数据源与通用字段",
+      "format": "docx",
+      "sha256": "15cca4164b4e5a7b6042e29668328fa5ca605e248cd9dc97e9255bcc7a8cb2e2",
+      "byte_size": 40105,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-06-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-07",
+      "file": "docx/07_相机状态事件采集与快照转换.docx",
+      "title": "相机状态事件采集与快照转换",
+      "format": "docx",
+      "sha256": "079af369965c0b6788cf215b97606f58c12329ade008298b33b7c8af06eed25e",
+      "byte_size": 39599,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-07-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-08",
+      "file": "docx/08_相机媒体模式与录像状态说明.docx",
+      "title": "相机媒体模式与录像状态说明",
+      "format": "docx",
+      "sha256": "8cebf54ef524413259ad34ee2f8ce503cd9c829ae8c06e8cd0203904d2633d71",
+      "byte_size": 40355,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-08-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-09",
+      "file": "docx/09_相机系统电池与设备身份说明.docx",
+      "title": "相机系统电池与设备身份说明",
+      "format": "docx",
+      "sha256": "9a112dc76346a1e0721db430a31997191747e4181ddda0ca8028f1a8dfc778d7",
+      "byte_size": 40511,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-09-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-10",
+      "file": "docx/10_相机版本连接标记与能力说明.docx",
+      "title": "相机版本连接标记与能力说明",
+      "format": "docx",
+      "sha256": "0d7c0e0ac2001ba1136e80526d6301960d6e101f2e91ba2b33382e63b36073cd",
+      "byte_size": 40556,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-10-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-11",
+      "file": "docx/11_相机详情页面与文本复制.docx",
+      "title": "相机详情页面与文本复制",
+      "format": "docx",
+      "sha256": "b95b5b6856ab30a3a417c97bffca43d91122a738853580ee9a543b900d88ace6",
+      "byte_size": 39503,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-11-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-12",
+      "file": "docx/12_设备数据源字段注册与接收契约.docx",
+      "title": "设备数据源字段注册与接收契约",
+      "format": "docx",
+      "sha256": "9d4b778e5aed74583b96f7f3141b49cbb534b3876fe5e208db7aac8b7f401c05",
+      "byte_size": 40221,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-12-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-13",
+      "file": "docx/13_实时状态缓存与并发通知.docx",
+      "title": "实时状态缓存与并发通知",
+      "format": "docx",
+      "sha256": "7e405f355cd484a5ef8a65bf43495cc6efe6c8355c086a3edb19f2bf64651808",
+      "byte_size": 39423,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-13-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-14",
+      "file": "docx/14_展示字段配置与选择交互.docx",
+      "title": "展示字段配置与选择交互",
+      "format": "docx",
+      "sha256": "817e272d0a975440ecd54c2e7e6d80d23cd5af4e9e2c2ca8bf4ca54d9a9e23eb",
+      "byte_size": 40149,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-14-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-15",
+      "file": "docx/15_应用内悬浮窗行为与生命周期.docx",
+      "title": "应用内悬浮窗行为与生命周期",
+      "format": "docx",
+      "sha256": "e26e92a5ec23de56093e712fcd49fc4ca0c15b04bf9984848e05802e4412e410",
+      "byte_size": 39534,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-15-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-16",
+      "file": "docx/16_可操作控件热区检测.docx",
+      "title": "可操作控件热区检测",
+      "format": "docx",
+      "sha256": "d7ce3538f29ac930e17a668ff4c4f87197ddee555c10700551dbff7fddde10f1",
+      "byte_size": 39554,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-16-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-17",
+      "file": "docx/17_现场数据收集与 ZIP 组织.docx",
+      "title": "现场数据收集与 ZIP 组织",
+      "format": "docx",
+      "sha256": "1f18de44d65870efcdb59f6b1749115bbfa154406393167dde7d7a995c20add6",
+      "byte_size": 40286,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-17-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-18",
+      "file": "docx/18_导出页面系统分享与失败处理.docx",
+      "title": "导出页面系统分享与失败处理",
+      "format": "docx",
+      "sha256": "ae3d2e01b959ea43da73ea3f199600c21143f369139ef1bf74aa008a38ae5ca9",
+      "byte_size": 39687,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-18-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-19",
+      "file": "docx/19_宿主能力适配与跨 App 接入边界.docx",
+      "title": "宿主能力适配与跨 App 接入边界",
+      "format": "docx",
+      "sha256": "d4d9e39474c3c1e6f30e5d42489657c9b5763a01d53e761fdf9f5ce4e7536e53",
+      "byte_size": 39662,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-19-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-20",
+      "file": "docx/20_Debug 扩展维护与问题定位.docx",
+      "title": "Debug 扩展维护与问题定位",
+      "format": "docx",
+      "sha256": "596cd25981c9813b8b4cbd948beaba2833b4109e4f81114807abc32fdd37d280",
+      "byte_size": 39702,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-20-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-21",
+      "file": "docx/21_Flavor 编译隔离与构建核验.docx",
+      "title": "Flavor 编译隔离与构建核验",
+      "format": "docx",
+      "sha256": "6192537afdf65fcbb803bcdf9c09c86b9d8fea45ae1fe06f21900be98e760a43",
+      "byte_size": 39993,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-21-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-22",
+      "file": "docx/22_Debug 验证计划与验收记录要求.docx",
+      "title": "Debug 验证计划与验收记录要求",
+      "format": "docx",
+      "sha256": "48f1c2753befaf5f81008ac688a04557aedcbcef44ed0218c64ad80eb5a8f953",
+      "byte_size": 40375,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-22-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-23",
+      "file": "docx/23_Debug 二期建设目标与实施约束.docx",
+      "title": "Debug 二期建设目标与实施约束",
+      "format": "docx",
+      "sha256": "d4cca286ab56379305adc575fc11bc837878101f558eeaa31ff6b3c3ad7bd6f1",
+      "byte_size": 39782,
+      "page_count": null,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-23-B000003",
+          "quote": "适用分支 p/caijiamin/feat_debug_2th\n基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb\n资料日期 2026 年 11 月 3 日"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": []
+    },
+    {
+      "doc_id": "DOC-24",
+      "file": "pdf/24_Debug 当前架构与调用关系图解.pdf",
+      "title": "Debug 当前架构与调用关系图解",
+      "format": "pdf",
+      "sha256": "7e1c68f96a8a39b6ce77296bcfcd796eefa4bd4ed24ed45a90963c2987451bb0",
+      "byte_size": 153896,
+      "page_count": 4,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-24-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 当前实现与明确标注的待办"
+        },
+        {
+          "block_id": "DOC-24-B000015",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-24-B000038",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0001",
+          "details": "PDF 第2至4页为节点与箭头图。正文已给出当前入口及两条数据路径；本次关系题仅使用第1页明确正文，不以节点提取顺序推导依赖或完成状态。"
+        }
+      ]
+    },
+    {
+      "doc_id": "DOC-25",
+      "file": "pdf/25_设备字段更新与悬浮窗刷新图解.pdf",
+      "title": "设备字段更新与悬浮窗刷新图解",
+      "format": "pdf",
+      "sha256": "c5ddf1d1a4c7a3c8c798f53b24bc5ea83d07171db0229caa62aeb21cb4a6cd8c",
+      "byte_size": 147094,
+      "page_count": 3,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-25-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 当前实现与明确标注的待办"
+        },
+        {
+          "block_id": "DOC-25-B000014",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-25-B000040",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0002",
+          "details": "PDF 第1页部分正文在“相同”“Registry 负”“最后”处发生视觉换行，原文块按行保留；第3页独立清理表保持原单元格 bbox。跨行事实使用多个连续片段，不拼造 quote。"
+        }
+      ]
+    },
+    {
+      "doc_id": "DOC-26",
+      "file": "pdf/26_现场导出与系统分享流程图解.pdf",
+      "title": "现场导出与系统分享流程图解",
+      "format": "pdf",
+      "sha256": "22e3bdacb54134782a60136cc90df8bb6ca4eda583822bed6d4e432654d27a99",
+      "byte_size": 147564,
+      "page_count": 3,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-26-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 当前实现与明确标注的待办"
+        },
+        {
+          "block_id": "DOC-26-B000014",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-26-B000035",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0003",
+          "details": "PDF 第2页异常边界在“立即删”后换行。原始两行均保留；所选证据只截取前一行完整表达的停止/失败规则。生成成功与分享完成分开标注。"
+        }
+      ]
+    },
+    {
+      "doc_id": "DOC-27",
+      "file": "pdf/27_Debug 二期目标架构与能力流程.pdf",
+      "title": "Debug 二期目标架构与能力流程",
+      "format": "pdf",
+      "sha256": "08813238dd126a538157bdb3c8c3c59611b0e104ad0727681e8ec12f9bf2a91a",
+      "byte_size": 177382,
+      "page_count": 4,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-27-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 二期目标设计"
+        },
+        {
+          "block_id": "DOC-27-B000016",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-27-B000040",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0004",
+          "details": "PDF 第2至4页均为二期目标图。只把正文和节点作为设计说明，未将箭头或统一模型存在解释成已经接入/验收。接口签名及协议编号未补写。"
+        }
+      ]
+    },
+    {
+      "doc_id": "DOC-28",
+      "file": "pdf/28_一期现状与二期迁移对照.pdf",
+      "title": "一期现状与二期迁移对照",
+      "format": "pdf",
+      "sha256": "b66bb9a4dd2ca7a54970abcccc9ddf45b0f2c041d115696f74f0c725f9f2129a",
+      "byte_size": 173607,
+      "page_count": 3,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-28-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 当前实现与明确标注的待办"
+        },
+        {
+          "block_id": "DOC-28-B000015",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-28-B000055",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0005",
+          "details": "PDF 第2页“现状与目标”表已按实际网格提取。列标题分别为当前代码、二期目标；所选日志题保持同一行对应，不把目标列合并为现状。"
+        }
+      ]
+    },
+    {
+      "doc_id": "DOC-29",
+      "file": "pdf/29_相机字段标签与格式化参考.pdf",
+      "title": "相机字段标签与格式化参考",
+      "format": "pdf",
+      "sha256": "5390b5161d270c6b1acaf490766940b072792a3cb0b3c20a27562b08bc5092fe",
+      "byte_size": 192863,
+      "page_count": 12,
+      "declared_business_branch": "p/caijiamin/feat_debug_2th",
+      "declared_business_commit": "9010928ca51c6e766f75414c49c748338e0b7ecb",
+      "declared_document_date": "2026-11-03",
+      "version_evidence": [
+        {
+          "block_id": "DOC-29-B000004",
+          "quote": "版本范围 p/caijiamin/feat_debug_2th 9010928ca51c | 当前实现与明确标注的待办"
+        },
+        {
+          "block_id": "DOC-29-B000053",
+          "quote": "OBSBOT Live Debug 技术资料  2026 年 11 月 3 日"
+        },
+        {
+          "block_id": "DOC-29-B000672",
+          "quote": "统一基线提交 9010928ca51c6e766f75414c49c748338e0b7ecb。以下摘要为文件 SHA256 前 16 位，用于核对资料整理时的源码版本。"
+        }
+      ],
+      "source_code_crosscheck": "not_available",
+      "extraction_issues": [
+        {
+          "issue_id": "ISSUE-0006",
+          "details": "PDF 第1页表格内 media.boot.main_work_mode 视觉断行为 media.boot.main_work_m / ode；其他长 ID/类型/表达式同样有单元格内换行。保留原始 LF，不静默重建标识符；本次确切标识符题选择无断行单元格。完整原始表保留行列 bbox 供人工复核。"
+        }
+      ]
+    }
+  ],
+  "extraction_environment": {
+    "docx": "stdlib XML direct body order",
+    "pdf": "pdfplumber 0.11.9",
+    "pdf_coordinate_convention": "pdfplumber x0/top/x1/bottom in points; page rotation handled by pdfplumber/pdfminer; page bbox uses reported mediabox; no crop transform; pages examined have rotation 0 and cropbox equal mediabox",
+    "source_code_note": "当前工作区没有与声明提交对应的公司源码，未使用工作区外源码作为核对依据。"
+  }
+}

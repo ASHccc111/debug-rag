@@ -1,0 +1,599 @@
+{
+  "type": "object",
+  "required": [
+    "case_id",
+    "split",
+    "family_id",
+    "category",
+    "topic",
+    "question",
+    "expected_status",
+    "reference_answer",
+    "retrieval_scored",
+    "required_points",
+    "forbidden_claims",
+    "evidence",
+    "response_requirements",
+    "absence_check",
+    "clarification",
+    "review"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^DBG-EVAL-\\d{4}$"
+    },
+    "split": {
+      "enum": [
+        "dev",
+        "test"
+      ]
+    },
+    "family_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "enum": [
+        "fact",
+        "operation",
+        "cross_document",
+        "status",
+        "boundary"
+      ]
+    },
+    "topic": {
+      "enum": [
+        "overview_initialization",
+        "phone_performance",
+        "camera",
+        "registry_state",
+        "field_selection_overlay",
+        "hotspot_detection",
+        "export_share",
+        "host_build_maintenance",
+        "phase2_verification"
+      ]
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "expected_status": {
+      "enum": [
+        "answered",
+        "insufficient_evidence",
+        "out_of_scope",
+        "clarify"
+      ]
+    },
+    "reference_answer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "retrieval_scored": {
+      "type": "boolean"
+    },
+    "required_points": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/point"
+      },
+      "minItems": 0
+    },
+    "forbidden_claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/forbidden"
+      },
+      "minItems": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      },
+      "minItems": 0
+    },
+    "response_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "absence_check": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/absence"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clarification": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/clarification"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "review": {
+      "$ref": "#/$defs/review"
+    }
+  },
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:debug-business-v1:case",
+  "title": "Debug business single-turn evaluation draft",
+  "description": "Closed case contract. Cross-file and semantic review requirements are additional.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "expected_status": {
+            "const": "answered"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "category": {
+            "enum": [
+              "fact",
+              "operation",
+              "cross_document",
+              "status"
+            ]
+          },
+          "retrieval_scored": {
+            "const": true
+          },
+          "required_points": {
+            "minItems": 1
+          },
+          "evidence": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "role": {
+                  "const": "support"
+                }
+              }
+            }
+          },
+          "response_requirements": {
+            "maxItems": 0
+          },
+          "absence_check": {
+            "type": "null"
+          },
+          "clarification": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "category": {
+            "const": "boundary"
+          },
+          "retrieval_scored": {
+            "const": false
+          },
+          "required_points": {
+            "maxItems": 0
+          },
+          "response_requirements": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "expected_status": {
+            "const": "insufficient_evidence"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "absence_check": {
+            "$ref": "#/$defs/absence"
+          },
+          "evidence": {
+            "items": {
+              "properties": {
+                "role": {
+                  "const": "scope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "absence_check": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "expected_status": {
+            "const": "clarify"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "clarification": {
+            "$ref": "#/$defs/clarification"
+          },
+          "evidence": {
+            "minItems": 2,
+            "items": {
+              "properties": {
+                "role": {
+                  "const": "disambiguation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "clarification": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "expected_status": {
+            "const": "out_of_scope"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "point": {
+      "type": "object",
+      "required": [
+        "point_id",
+        "text",
+        "critical",
+        "required_literals",
+        "support_sets"
+      ],
+      "properties": {
+        "point_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^P[1-9]\\d*$"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "critical": {
+          "type": "boolean"
+        },
+        "required_literals": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "support_sets": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^G[1-9]\\d*$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "role",
+        "doc_id",
+        "source_sha256",
+        "block_id",
+        "char_start",
+        "char_end",
+        "quote"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^G[1-9]\\d*$"
+        },
+        "role": {
+          "enum": [
+            "support",
+            "scope",
+            "disambiguation"
+          ]
+        },
+        "doc_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^DOC-\\d{2}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "block_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^DOC-\\d{2}-B\\d{6}$"
+        },
+        "char_start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "char_end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "forbidden": {
+      "type": "object",
+      "required": [
+        "claim",
+        "severity",
+        "reason",
+        "evidence_ids"
+      ],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "major"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^G[1-9]\\d*$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "absence": {
+      "type": "object",
+      "required": [
+        "missing_information",
+        "checked_doc_ids",
+        "check_summary"
+      ],
+      "properties": {
+        "missing_information": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checked_doc_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^DOC-\\d{2}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "check_summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "clarification": {
+      "type": "object",
+      "required": [
+        "missing_slot",
+        "acceptable_question_intent",
+        "example_question",
+        "interpretations"
+      ],
+      "properties": {
+        "missing_slot": {
+          "type": "string",
+          "minLength": 1
+        },
+        "acceptable_question_intent": {
+          "type": "string",
+          "minLength": 1
+        },
+        "example_question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interpretations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "condition",
+              "answer_difference",
+              "evidence_ids"
+            ],
+            "properties": {
+              "condition": {
+                "type": "string",
+                "minLength": 1
+              },
+              "answer_difference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "^G[1-9]\\d*$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "machine_checked",
+        "human_status",
+        "approved_by",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "machine_checked": {
+          "type": "boolean"
+        },
+        "human_status": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approved_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "human_status": {
+                "const": "pending"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "approved_by": {
+                "type": "null"
+              },
+              "approved_at": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "approved_by": {
+                "type": "string",
+                "minLength": 1
+              },
+              "approved_at": {
+                "type": "string",
+                "minLength": 1,
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

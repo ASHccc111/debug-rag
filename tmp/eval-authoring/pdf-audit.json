@@ -1,0 +1,578 @@
+[
+  {
+    "doc_id": "DOC-24",
+    "page_count": 4,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 4,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 38,
+    "block_count": 38
+  },
+  {
+    "doc_id": "DOC-25",
+    "page_count": 3,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 40,
+    "block_count": 40
+  },
+  {
+    "doc_id": "DOC-26",
+    "page_count": 3,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 35,
+    "block_count": 35
+  },
+  {
+    "doc_id": "DOC-27",
+    "page_count": 4,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 4,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 40,
+    "block_count": 40
+  },
+  {
+    "doc_id": "DOC-28",
+    "page_count": 3,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 55,
+    "block_count": 55
+  },
+  {
+    "doc_id": "DOC-29",
+    "page_count": 12,
+    "pages": [
+      {
+        "page": 1,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 2,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 3,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 4,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 5,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 6,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 7,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 8,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 9,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 10,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 11,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      },
+      {
+        "page": 12,
+        "width": 595.2756,
+        "height": 841.8898,
+        "rotation": 0,
+        "mediabox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ],
+        "cropbox": [
+          0,
+          0.0,
+          595.2756,
+          841.8898
+        ]
+      }
+    ],
+    "secondary_extractor": "pypdf 6.10.0",
+    "blocks_matched_ignoring_whitespace": 672,
+    "block_count": 672
+  }
+]
