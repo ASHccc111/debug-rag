@@ -53,6 +53,7 @@ class LoadedDocument:
     metadata: Metadata
     raw_text: str
     body_start: int
+    origin: dict | None = None
 
 
 class UniqueSafeLoader(yaml.SafeLoader):
@@ -101,6 +102,8 @@ def read_utf8(path: Path, root: Path) -> str:
 
 
 def load_document(path: Path, root: Path) -> LoadedDocument:
+    if path.suffix.lower() in {".pdf", ".docx"}:
+        raise IngestError([Issue(path.name, "binary_requires_parse_review")])
     raw = read_utf8(path, root)
     body_start = 1 if raw.startswith("\ufeff") else 0
     suffix = path.suffix.lower()
@@ -138,7 +141,15 @@ def load_document(path: Path, root: Path) -> LoadedDocument:
     # Keep a simple, unambiguous line-coordinate contract for LF and CRLF.
     if "\r" in raw.replace("\r\n", ""):
         raise IngestError([Issue(path.name, "unsupported_bare_cr")])
-    return LoadedDocument(path.relative_to(root).as_posix(), suffix[1:], metadata, raw, body_start)
+    from debug_rag.ingestion.readers import ParseError, load_origin
+
+    try:
+        origin = load_origin(path, raw) if suffix == ".md" else None
+    except ParseError as exc:
+        raise IngestError([Issue(path.name, exc.code)]) from None
+    return LoadedDocument(
+        path.relative_to(root).as_posix(), suffix[1:], metadata, raw, body_start, origin
+    )
 
 
 def load_source(source: Path) -> list[LoadedDocument]:
@@ -147,7 +158,17 @@ def load_source(source: Path) -> list[LoadedDocument]:
         raise IngestError([Issue(source.name, "source_not_found")])
     root = source if source.is_dir() else source.parent
     paths = (
-        sorted(p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in {".md", ".txt"})
+        sorted(
+            p
+            for p in root.rglob("*")
+            if p.is_file()
+            and p.suffix.lower() in {".md", ".txt", ".pdf", ".docx"}
+            and not (
+                p.name in {"original.pdf", "original.docx"}
+                and (p.parent / "document.md").is_file()
+                and (p.parent / "document.origin.json").is_file()
+            )
+        )
         if source.is_dir()
         else [source]
     )

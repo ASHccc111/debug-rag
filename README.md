@@ -6,7 +6,8 @@
 
 ## 功能特性
 
-- **文档导入与原文定位**：支持 Markdown、TXT 及元数据校验；按章节和段落生成父子片段，保留标题路径、行号和字符区间。
+- **文档导入与原文定位**：支持 Markdown/TXT，并提供 DOCX/PDF 结构化提取与核对入口；保留标题、表格单元格、PDF 页码和坐标、Word 正文块与原件摘要。
+- **解析质量门禁**：提取草稿、原文件与位置映射一起保存，核对后才能入库。图片、扫描页、自动编号和复杂表格显式列出待处理项，不静默视为已识别；纯扫描件在没有 OCR 文字时拒绝入库。
 - **资料版本管理**：保存不可变文档修订；重复导入复用已有内容，新增、替换和移除文档通过完整快照构建与发布生效。
 - **混合检索**：提供本地 bge-small 稠密向量＋BM25 基线，以及远程 BGE-M3 dense＋learned sparse 路径；各路候选去重后使用 RRF 融合。
 - **Query 改写与独立重排**：可选使用 DeepSeek 生成一条检索改写；使用百炼 qwen3-rerank 对融合后的原文候选重排，增强失败时记录原因并回退。
@@ -78,7 +79,7 @@ Markdown / TXT ＋ 元数据
 - 每路 TopK 独立配置，默认 5，当前范围 1–5；有效改写最多增加为四路，合计最多 20 个候选。
 - 跨路相同 chunk 合并为一个候选并保留各路排名；融合只执行一次，不直接相加不同检索器的原始分数。
 
-远程适配器、索引及四路召回代码已有模拟接口测试；**真实火山 BGE-M3 服务联调尚未完成**。本地基线已有真实运行验证。
+远程适配器、索引及四路召回代码已有模拟接口测试。**真实火山 BGE-M3 编码、Milvus 独立建库、dense/sparse 双路召回、RRF 与父片段扩展已在模拟资料上验证通过**；与改写、独立重排和生成的真实联合验收仍待完成。本地基线已有真实运行验证。
 
 ## 架构与技术栈
 
@@ -125,7 +126,7 @@ docs/                      # 设计、协议与代码导读
 准备 Python 3.12、uv、已启动的 Docker Desktop，以及完整的本地 bge-small 模型文件。在仓库根目录执行：
 
 ```powershell
-uv sync --frozen --extra dev --extra local-models
+uv sync --frozen --extra dev --extra local-models --extra readers
 # 首次使用时创建配置；已有 .env 时保留原配置。
 Copy-Item .env.example .env
 ```
@@ -160,6 +161,27 @@ docker compose -f infra/milvus/compose.yaml stop
 
 `/health/live` 表示进程存活；`/health/ready` 区分检索可用与完整问答配置。关闭外部生成时，本地检索仍可使用，完整问答就绪检查可能返回 503。
 
+## DOCX / PDF 资料处理
+
+原始文件配套同名 `.meta.json` 元数据，经提取与核对后再进入现有索引链路：
+
+```text
+DOCX / PDF ＋ 元数据
+→ 正文、表格与位置提取 → 草稿＋原件＋映射＋页面/图片预览
+→ 人工检查解析内容与警告 → 明确接受已知缺失（如适用）
+→ 入库：SQLite 保存二进制原件和提取文本
+→ 父子切片 → 原文位置随候选和引用返回
+```
+
+```powershell
+uv run --no-sync python -m debug_rag.cli parse --source materials/debug.docx --output runtime/parsed
+# 对照原件完成核对后，指定命令输出的 document.md：
+uv run --no-sync python -m debug_rag.cli review-parse --source runtime/parsed/实际目录/document.md
+uv run --no-sync python -m debug_rag.cli ingest --kb debug-documents --source runtime/parsed
+```
+
+有解析警告时默认拒绝核对确认，只有检查并接受已知局限后才能使用 `--accept-incomplete`；它不会执行 OCR。扫描页、图片语义与复杂版面仍需后续 OCR/视觉适配或人工补充。实际公司文件尚未用于本项目验收。详见 [DOCX/PDF 解析说明](docs/DOCX与PDF解析说明.md)。
+
 ## 测试与验证
 
 ```powershell
@@ -179,8 +201,8 @@ Remove-Item Env:RAG_RUN_MILVUS_TESTS
 
 - 提供单轮问答；多轮记忆、条件继承和会话管理尚未实现。
 - 文档维护采用 CLI 全量导入及快照发布，尚无独立上传管理台。
-- 远程 BGE-M3 真实联调、固定评测集及系统性对照实验待完成。
-- PDF/OCR、辅助摘要检索、应用容器化和公司真实资料接入不在当前已完成功能内。
+- 远程 BGE-M3 的历史 403 已在服务开通及密钥更新后解除；独立模拟库真实建库与双路检索通过。可用 `uv run --no-sync python scripts/verify_bge_remote.py --allow-paid` 做受控探测，增加 `--build` 会重新收费编码并发布模拟库新代，不启用生成或重排。默认演示仍使用本地基线。
+- 固定评测集、系统性对照实验、扫描件 OCR/视觉识别、辅助摘要检索、应用容器化和公司真实资料接入待完成。
 
 ## 进一步阅读
 
@@ -189,4 +211,6 @@ Remove-Item Env:RAG_RUN_MILVUS_TESTS
 - [Query 改写与独立重排](docs/Query改写与独立重排接入说明.md)
 - [工程可靠性设计](docs/工程可靠性说明.md)
 - [远程 BGE-M3 接口与限制](docs/远程BGE-M3协议.md)
+- [文档解析与远程编码验收](docs/文档解析与远程编码验收-2026-11-04.md)
+- [BGE-M3 真实建库验收](docs/BGE-M3真实建库验收-2026-11-04.md)
 - [Milvus 部署说明](infra/milvus/README.md)

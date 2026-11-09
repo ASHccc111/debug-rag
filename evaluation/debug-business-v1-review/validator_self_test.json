@@ -1,0 +1,203 @@
+{
+  "executed_at": "2026-11-05T18:31:23.831514+08:00",
+  "mode": "temporary_copy_mutation",
+  "source_dataset_unchanged": true,
+  "contains_test_questions_or_answers": false,
+  "total_checks": 16,
+  "passed_checks": 16,
+  "all_passed": true,
+  "results": [
+    {
+      "name": "valid_unmodified_baseline",
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "expected_error_code": null,
+      "detected_error_codes": [],
+      "passed": true
+    },
+    {
+      "name": "duplicate_case_id",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "duplicate_case_id",
+      "detected_error_codes": [
+        "duplicate_case_id",
+        "family_manifest_complete"
+      ],
+      "passed": true
+    },
+    {
+      "name": "family_id_across_splits",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "duplicate_or_cross_split_family",
+      "detected_error_codes": [
+        "duplicate_or_cross_split_family",
+        "family_manifest_complete",
+        "reproducible_allocation",
+        "split_reproduction_mismatch"
+      ],
+      "passed": true
+    },
+    {
+      "name": "wrong_quote",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "evidence_quote_slice",
+      "detected_error_codes": [
+        "evidence_quote_slice"
+      ],
+      "passed": true
+    },
+    {
+      "name": "forged_physical_file_sha256",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "file_sha256",
+      "detected_error_codes": [
+        "block_document_hash",
+        "file_sha256"
+      ],
+      "passed": true
+    },
+    {
+      "name": "dangling_G_reference",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "dangling_or_wrong_support_ref",
+      "detected_error_codes": [
+        "dangling_or_wrong_support_ref",
+        "literal_not_bound_to_point_source",
+        "unused_answer_evidence"
+      ],
+      "passed": true
+    },
+    {
+      "name": "wrong_category_quota_valid_structure",
+      "expected_exit_code": 2,
+      "actual_exit_code": 2,
+      "expected_error_code": "stratum_quota",
+      "detected_error_codes": [
+        "answered_denominator",
+        "stratum_quota",
+        "total_and_split_quotas"
+      ],
+      "passed": true
+    },
+    {
+      "name": "duplicate_JSON_key",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "jsonl_encoding_or_object",
+      "detected_error_codes": [
+        "answered_denominator",
+        "family_manifest_complete",
+        "jsonl_encoding_or_object",
+        "reproducible_allocation",
+        "split_reproduction_mismatch",
+        "stratum_quota",
+        "total_and_split_quotas"
+      ],
+      "passed": true
+    },
+    {
+      "name": "UTF8_BOM_rejected",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "file_encoding_or_json",
+      "detected_error_codes": [
+        "all_six_pdf_necessary_source_count",
+        "answered_denominator",
+        "family_manifest_complete",
+        "file_encoding_or_json",
+        "reproducible_allocation",
+        "stratum_quota",
+        "total_and_split_quotas"
+      ],
+      "passed": true
+    },
+    {
+      "name": "extra_nested_field",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "case_contract",
+      "detected_error_codes": [
+        "answered_denominator",
+        "case_contract",
+        "stratum_quota"
+      ],
+      "passed": true
+    },
+    {
+      "name": "bool_is_not_integer",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "case_contract",
+      "detected_error_codes": [
+        "answered_denominator",
+        "case_contract",
+        "stratum_quota"
+      ],
+      "passed": true
+    },
+    {
+      "name": "invalid_family_field_type",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "case_contract",
+      "detected_error_codes": [
+        "answered_denominator",
+        "case_contract",
+        "stratum_quota"
+      ],
+      "passed": true
+    },
+    {
+      "name": "invalid_case_id_type",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "case_contract",
+      "detected_error_codes": [
+        "answered_denominator",
+        "case_contract",
+        "stratum_quota"
+      ],
+      "passed": true
+    },
+    {
+      "name": "PDF_page_out_of_bounds",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "pdf_page_range",
+      "detected_error_codes": [
+        "pdf_page_range"
+      ],
+      "passed": true
+    },
+    {
+      "name": "unverified_block_used_as_evidence",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "unverified_evidence_block",
+      "detected_error_codes": [
+        "unverified_evidence_block"
+      ],
+      "passed": true
+    },
+    {
+      "name": "human_approval_cannot_be_agent_signed",
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_error_code": "draft_not_pending",
+      "detected_error_codes": [
+        "draft_not_pending"
+      ],
+      "passed": true
+    }
+  ],
+  "notes": [
+    "退出码2用例保留合法结构，仅减少一个 fact/test 代表题并同步问题族清单，单独检验 B 组。",
+    "临时副本复用只读的真实语料；未改原始 DOCX/PDF。",
+    "这里只证明列出的损坏能被检出，不证明校验器没有其他缺陷。"
+  ]
+}

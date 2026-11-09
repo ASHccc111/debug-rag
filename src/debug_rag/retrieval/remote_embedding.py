@@ -141,7 +141,7 @@ class VikingEmbedder:
             "output_per_million": "0",
             "verified_on": str(s.viking_price_verified_on),
             "valid_through": str(s.viking_price_valid_through),
-            "source": "account-verified request upper bound",
+            "source": "https://docs.volcengine.com/docs/vector-database-vikingdb/billing-of-a-vector-database?lang=en",
             "method": "per-request bound; synthetic reservation unit, not token usage",
             "request_upper_bound_cny": str(bound),
         }
@@ -217,6 +217,13 @@ class VikingEmbedder:
                         },
                         "data": [{"text": text} for text in texts],
                     },
+                )
+            record["http_status"] = response.status_code
+            if response.status_code in {401, 403}:
+                raise RagError(
+                    "embedding_access_denied",
+                    "火山向量服务拒绝访问，请检查服务开通、地域、项目及 API Key 权限。",
+                    403,
                 )
             if response.status_code != 200:
                 raise RagError(

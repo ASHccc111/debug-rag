@@ -9,6 +9,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -66,6 +67,17 @@ class DocumentRevision(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
+
+
+class DocumentOrigin(Base):
+    """Additive table: preserved binary original + reviewed extraction mapping."""
+
+    __tablename__ = "document_origins"
+    revision_id: Mapped[str] = mapped_column(
+        ForeignKey("document_revisions.revision_id"), primary_key=True
+    )
+    original_bytes: Mapped[bytes] = mapped_column(LargeBinary)
+    manifest: Mapped[dict] = mapped_column(JSON)
 
 
 class SourceChunk(Base):

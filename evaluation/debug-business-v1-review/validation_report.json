@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "debug-business-v1",
+  "checked_at": "2026-11-05T22:28:10.357042+08:00",
+  "mode": "draft_only",
+  "structural_validation_passed": true,
+  "target_quotas_met": true,
+  "corpus_scope_complete": true,
+  "human_review_complete": false,
+  "ready_for_final_evaluation": false,
+  "dataset_status": "draft",
+  "actual_counts": {
+    "total": 60,
+    "split": {
+      "dev": 40,
+      "test": 20
+    },
+    "category": {
+      "fact": 15,
+      "operation": 15,
+      "cross_document": 10,
+      "status": 10,
+      "boundary": 10
+    },
+    "status": {
+      "answered": 50,
+      "insufficient_evidence": 4,
+      "out_of_scope": 3,
+      "clarify": 3
+    },
+    "category_by_split": {
+      "dev": {
+        "fact": 10,
+        "operation": 10,
+        "cross_document": 6,
+        "status": 7,
+        "boundary": 7
+      },
+      "test": {
+        "fact": 5,
+        "operation": 5,
+        "cross_document": 4,
+        "status": 3,
+        "boundary": 3
+      }
+    },
+    "status_by_split": {
+      "dev": {
+        "answered": 33,
+        "insufficient_evidence": 3,
+        "out_of_scope": 2,
+        "clarify": 2
+      },
+      "test": {
+        "answered": 17,
+        "insufficient_evidence": 1,
+        "out_of_scope": 1,
+        "clarify": 1
+      }
+    },
+    "answered": 50,
+    "answered_topic": {
+      "overview_initialization": 6,
+      "phone_performance": 5,
+      "camera": 10,
+      "field_selection_overlay": 6,
+      "hotspot_detection": 3,
+      "registry_state": 7,
+      "export_share": 6,
+      "host_build_maintenance": 4,
+      "phase2_verification": 3
+    },
+    "positive_doc_ids": [
+      "DOC-01",
+      "DOC-02",
+      "DOC-03",
+      "DOC-04",
+      "DOC-05",
+      "DOC-06",
+      "DOC-07",
+      "DOC-08",
+      "DOC-09",
+      "DOC-10",
+      "DOC-11",
+      "DOC-12",
+      "DOC-13",
+      "DOC-14",
+      "DOC-15",
+      "DOC-16",
+      "DOC-17",
+      "DOC-18",
+      "DOC-19",
+      "DOC-20",
+      "DOC-21",
+      "DOC-22",
+      "DOC-23",
+      "DOC-24",
+      "DOC-25",
+      "DOC-26",
+      "DOC-27",
+      "DOC-28",
+      "DOC-29"
+    ],
+    "answered_with_literals": 43,
+    "source_blocks": 1694,
+    "documents": 30,
+    "positive_document_count": 29,
+    "positive_pdf_ids": [
+      "DOC-24",
+      "DOC-25",
+      "DOC-26",
+      "DOC-27",
+      "DOC-28",
+      "DOC-29"
+    ]
+  },
+  "all_records_machine_checked": true,
+  "blocking_issues": [],
+  "errors": [],
+  "checks_run": [
+    {
+      "group": "A",
+      "description": "UTF-8/no BOM/duplicate keys; closed field contracts; corpus bytes/hash/digest/version; native DOCX/PDF positions and PDF cell boxes/text; exact evidence slices; case/family/question uniqueness; point/support/role/literal bindings; boundary structure; deterministic split; pending human status",
+      "passed": true
+    },
+    {
+      "group": "B",
+      "description": "Fixed 30-document scope and recorded reading; 60/40/20 and category/substatus quotas; answered topics; >=20 documents; all six PDFs; >=12 literal cases",
+      "passed": true
+    }
+  ],
+  "semantic_checks_pending": [
+    "题目/答案正确性及原子要点充分性",
+    "support_sets 替代来源完整性与跨文档必要性",
+    "近重复与问题族边界",
+    "critical 与 forbidden_claims 合理性",
+    "clarify 是否只缺一个必要条件且必须追问",
+    "PDF 原页细节、表格列与图示关系逐题人工确认"
+  ],
+  "limitations": [
+    "只实现本数据契约关键词，未宣称通用 JSON Schema 解释器。",
+    "字符/哈希一致不证明答案语义正确；没有人工审批或系统答题。"
+  ],
+  "exit_code": 0
+}

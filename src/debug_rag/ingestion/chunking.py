@@ -8,6 +8,7 @@ from markdown_it import MarkdownIt
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from debug_rag.ingestion.documents import LoadedDocument
+from debug_rag.ingestion.readers import has_source_text
 
 
 class ChunkConfig(BaseModel):
@@ -103,6 +104,18 @@ def chunk_document(doc: LoadedDocument, config: ChunkConfig) -> list[Chunk]:
     boundaries = sorted({point for pair in blocks for point in pair})
     raw_lines = line_starts(raw)
     chunks = []
+    source_spans = (
+        None
+        if doc.origin is None
+        else [
+            (block["start_char"], block["end_char"])
+            for block in doc.origin["manifest"]["blocks"]
+            if has_source_text(block)
+        ]
+    )
+
+    def has_evidence(start, end):
+        return source_spans is None or any(a < end and b > start for a, b in source_spans)
 
     def add(kind, start, end, section_path, parent=None):
         ordinal = len(chunks)
@@ -127,7 +140,10 @@ def chunk_document(doc: LoadedDocument, config: ChunkConfig) -> list[Chunk]:
         if not raw[start:end].strip():
             continue
         for p_start, p_end in partition(raw, start, end, boundaries, config.parent_chars):
+            if not has_evidence(p_start, p_end):
+                continue
             parent = add("parent", p_start, p_end, section_path)
             for c_start, c_end in partition(raw, p_start, p_end, boundaries, config.child_chars):
-                add("child", c_start, c_end, section_path, parent)
+                if has_evidence(c_start, c_end):
+                    add("child", c_start, c_end, section_path, parent)
     return chunks

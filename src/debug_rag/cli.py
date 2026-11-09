@@ -17,6 +17,7 @@ from debug_rag.diagnostics import milvus_smoke, model_smoke, readiness
 from debug_rag.errors import RagError
 from debug_rag.ingestion.chunking import ChunkConfig
 from debug_rag.ingestion.documents import IngestError
+from debug_rag.ingestion.readers import ParseError, export_document, review_document
 from debug_rag.ingestion.service import inspect_generation, prepare_documents
 from debug_rag.retrieval.indexing import activate_generation
 from debug_rag.settings import Settings
@@ -87,6 +88,22 @@ def main(argv: list[str] | None = None) -> int:
             help="Opt into configured remote rewrite/rerank; may incur costs",
         )
     commands.add_parser("budget", help="Read the local project-wide usage ledger")
+    parse = commands.add_parser(
+        "parse", help="Extract DOCX/PDF into a reviewable bundle; no model API"
+    )
+    parse.add_argument("--source", type=Path, required=True)
+    parse.add_argument("--output", type=Path, required=True)
+    review = commands.add_parser(
+        "review-parse", help="Mark a hash-verified extraction as manually reviewed"
+    )
+    review.add_argument(
+        "--source", type=Path, required=True, help="Exported document.md, after visual review"
+    )
+    review.add_argument(
+        "--accept-incomplete",
+        action="store_true",
+        help="Explicitly accept listed missing/uncertain content",
+    )
     args = parser.parse_args(argv)
     engine = None
     try:
@@ -100,7 +117,13 @@ def main(argv: list[str] | None = None) -> int:
             raise RagError(
                 "remote_embedding_opt_in_required", "远程编码需要显式 --allow-paid。", 409
             )
-        if args.command == "model-smoke":
+        if args.command == "parse":
+            result = export_document(args.source, args.output)
+            exit_code = 0
+        elif args.command == "review-parse":
+            result = review_document(args.source, accept_incomplete=args.accept_incomplete)
+            exit_code = 0
+        elif args.command == "model-smoke":
             result = model_smoke(args.path)
             exit_code = 0
         else:
@@ -179,6 +202,9 @@ def main(argv: list[str] | None = None) -> int:
                     exit_code = 1
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return exit_code
+    except ParseError as exc:
+        print(json.dumps({"error": "document_parse_failed", "code": exc.code}), file=sys.stderr)
+        return 2
     except RagError as exc:
         print(json.dumps(exc.public(), ensure_ascii=False), file=sys.stderr)
         return 1

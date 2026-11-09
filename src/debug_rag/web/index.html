@@ -97,7 +97,8 @@
       const path = `/api/v1/sources/${encodeURIComponent(data.generation_id)}/${encodeURIComponent(row.chunk_id)}?kb_id=${encodeURIComponent(data.kb_id)}`;
       const source=await api(path);
       $('source-title').textContent=source.metadata.title;
-      $('source-text').textContent=`${source.section_path.join(' / ')}\n行 ${source.start_line}–${source.end_line}；字符 [${source.start_char}, ${source.end_char})\nrevision ${source.revision_id}\n\n${source.text}`;
+      const provenance=source.source_locations?`\n这是文件提取文本中的位置；原文件位置：\n${JSON.stringify(source.source_locations,null,2)}\n解析待核对项：${(source.extraction_warnings||[]).join('、')||'无'}\n原件 SHA256：${source.original_sha256}`:'';
+      $('source-text').textContent=`${source.section_path.join(' / ')}\n行 ${source.start_line}–${source.end_line}；字符 [${source.start_char}, ${source.end_char})\nrevision ${source.revision_id}${provenance}\n\n${source.text}`;
       $('source-dialog').showModal();
     }catch(error){$('notice').textContent=error.message;}
   }

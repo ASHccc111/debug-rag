@@ -1,0 +1,718 @@
+{
+  "schema_version": "1.0",
+  "performed_at": "2026-11-05T18:26:40.894989+08:00",
+  "performed_by": "generating_agent",
+  "human_review": false,
+  "scope": "固定30份；正文、简单表格、图示节点；源码依据尾部除版本声明外排除。",
+  "docx": [
+    {
+      "doc_id": "DOC-00",
+      "block_count": 81,
+      "python_docx_location_text_matches": 81
+    },
+    {
+      "doc_id": "DOC-01",
+      "block_count": 54,
+      "python_docx_location_text_matches": 54
+    },
+    {
+      "doc_id": "DOC-02",
+      "block_count": 15,
+      "python_docx_location_text_matches": 15
+    },
+    {
+      "doc_id": "DOC-03",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-04",
+      "block_count": 21,
+      "python_docx_location_text_matches": 21
+    },
+    {
+      "doc_id": "DOC-05",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-06",
+      "block_count": 39,
+      "python_docx_location_text_matches": 39
+    },
+    {
+      "doc_id": "DOC-07",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-08",
+      "block_count": 58,
+      "python_docx_location_text_matches": 58
+    },
+    {
+      "doc_id": "DOC-09",
+      "block_count": 70,
+      "python_docx_location_text_matches": 70
+    },
+    {
+      "doc_id": "DOC-10",
+      "block_count": 91,
+      "python_docx_location_text_matches": 91
+    },
+    {
+      "doc_id": "DOC-11",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-12",
+      "block_count": 46,
+      "python_docx_location_text_matches": 46
+    },
+    {
+      "doc_id": "DOC-13",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-14",
+      "block_count": 32,
+      "python_docx_location_text_matches": 32
+    },
+    {
+      "doc_id": "DOC-15",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-16",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-17",
+      "block_count": 32,
+      "python_docx_location_text_matches": 32
+    },
+    {
+      "doc_id": "DOC-18",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-19",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-20",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    },
+    {
+      "doc_id": "DOC-21",
+      "block_count": 37,
+      "python_docx_location_text_matches": 37
+    },
+    {
+      "doc_id": "DOC-22",
+      "block_count": 40,
+      "python_docx_location_text_matches": 40
+    },
+    {
+      "doc_id": "DOC-23",
+      "block_count": 18,
+      "python_docx_location_text_matches": 18
+    }
+  ],
+  "pdf": [
+    {
+      "doc_id": "DOC-24",
+      "page_count": 4,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 4,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 38,
+      "block_count": 38
+    },
+    {
+      "doc_id": "DOC-25",
+      "page_count": 3,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 40,
+      "block_count": 40
+    },
+    {
+      "doc_id": "DOC-26",
+      "page_count": 3,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 35,
+      "block_count": 35
+    },
+    {
+      "doc_id": "DOC-27",
+      "page_count": 4,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 4,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 40,
+      "block_count": 40
+    },
+    {
+      "doc_id": "DOC-28",
+      "page_count": 3,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 55,
+      "block_count": 55
+    },
+    {
+      "doc_id": "DOC-29",
+      "page_count": 12,
+      "pages": [
+        {
+          "page": 1,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 2,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 3,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 4,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 5,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 6,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 7,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 8,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 9,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 10,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 11,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        },
+        {
+          "page": 12,
+          "width": 595.2756,
+          "height": 841.8898,
+          "rotation": 0,
+          "mediabox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ],
+          "cropbox": [
+            0,
+            0.0,
+            595.2756,
+            841.8898
+          ]
+        }
+      ],
+      "secondary_extractor": "pypdf 6.10.0",
+      "blocks_matched_ignoring_whitespace": 672,
+      "block_count": 672
+    }
+  ],
+  "visual_inspection": {
+    "method": "从当前哈希原件由 Poppler 渲染全部29页，逐份查看6组共7张联系表；字段表行列、换行和图示布局与文字提取交叉核对。",
+    "render_page_count": 29,
+    "diagram_policy": "关系/顺序题有明确正文或已核对的节点与箭头来源；不将目标图当当前代码。",
+    "limitations": "联系表用于整体核对；人工审核仍需放大原页逐题检查。PDF 原始断行保留，未做静默字段重建。"
+  },
+  "source_code_crosscheck": "not_available",
+  "source_code_note": "当前工作区未提供对应业务提交；未读取工作区外业务源码。",
+  "reading_complete": true,
+  "unread_parts": [],
+  "known_unresolved_content_conflicts": []
+}

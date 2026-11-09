@@ -13,6 +13,7 @@ from debug_rag.ingestion.chunking import ChunkConfig, chunk_document
 from debug_rag.ingestion.documents import IngestError, Issue, load_source
 from debug_rag.storage.sqlite import (
     Document,
+    DocumentOrigin,
     DocumentRevision,
     GenerationDocument,
     IndexGeneration,
@@ -71,9 +72,10 @@ def prepare_documents(
                 session.add(document)
                 session.flush()
             meta = doc.metadata.model_dump(mode="json")
-            digest = fingerprint(
-                {"text": doc.raw_text, "metadata": meta, "format": doc.source_format}
-            )
+            identity = {"text": doc.raw_text, "metadata": meta, "format": doc.source_format}
+            if doc.origin is not None:
+                identity["origin"] = doc.origin["manifest"]
+            digest = fingerprint(identity)
             revision = session.scalar(
                 select(DocumentRevision).where(
                     DocumentRevision.document_id == document.document_id,
@@ -94,6 +96,14 @@ def prepare_documents(
                 session.add(revision)
                 session.flush()
                 created_revisions += 1
+                if doc.origin is not None:
+                    session.add(
+                        DocumentOrigin(
+                            revision_id=revision.revision_id,
+                            original_bytes=doc.origin["original"],
+                            manifest=doc.origin["manifest"],
+                        )
+                    )
             ids = {
                 c.ordinal: uuid5(
                     NAMESPACE_URL, f"debug-rag:{revision.revision_id}:{config_key}:{c.ordinal}"

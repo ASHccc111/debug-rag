@@ -1,0 +1,806 @@
+{
+  "schema_version": "1.0",
+  "dataset_version": "debug-business-v1",
+  "seed": 20261104,
+  "selection_policy": "先按主要目标/决定性事实/条件建立问题族，每族一个代表；未运行任何被测 RAG。",
+  "algorithm": "每个 category 分层；boundary 再按 expected_status 分层。对每族计算 SHA256(UTF8(str(seed)+\":\"+family_id))，按十六进制摘要、family_id 升序排列；每层前 dev_quota 个入 dev，其余入 test。与文件输入顺序无关。",
+  "dev_quota": {
+    "fact": 10,
+    "operation": 10,
+    "cross_document": 6,
+    "status": 7,
+    "boundary:insufficient_evidence": 3,
+    "boundary:out_of_scope": 2,
+    "boundary:clarify": 2
+  },
+  "families": [
+    {
+      "family_id": "spi-missing-implementation",
+      "case_id": "DBG-EVAL-0001",
+      "main_intent": "接入方只依赖 debug_api、没有打包 SPI 实现时，调用 DebugFeature 能否自动静默跳过？",
+      "grouping_reason": "主要用户目标：接入方只依赖 debug_api、没有打包 SPI 实现时，调用 DebugFeature 能否自动静默跳过？ 决定性事实与条件：不能假定静默跳过：DebugFeature.service 使用 loadNotNull 获取 IDebugService，依赖声明、SPI 注册产物与实现打包需要形成完整链路。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "cpu-normalized-process",
+      "case_id": "DBG-EVAL-0002",
+      "main_intent": "Debug 手机 CPU 百分比的计算口径是什么，能把它当作整机 CPU 占用吗？",
+      "grouping_reason": "主要用户目标：Debug 手机 CPU 百分比的计算口径是什么，能把它当作整机 CPU 占用吗？ 决定性事实与条件：分子是 Process.getElapsedCpuTime 增量，分母为经过时间乘可用 CPU 核数，再乘 100 并限制在 0 到 100。；这是按核心数归一化的进程指标，不能当作整机 CPU 占用。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "pss-heap-zero",
+      "case_id": "DBG-EVAL-0003",
+      "main_intent": "手机性能中 PSS 能由 Java Heap 和 Native Heap 相加得到吗，PSS 显示 0 应怎样理解？",
+      "grouping_reason": "主要用户目标：手机性能中 PSS 能由 Java Heap 和 Native Heap 相加得到吗，PSS 显示 0 应怎样理解？ 决定性事实与条件：这些字段不满足简单相加等于 PSS 的关系。；PSS 采集失败时当前以零构造快照；显示 0 前应核实采集成功与否，不能直接解释为未占内存。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "phone-source-field-identity",
+      "case_id": "DBG-EVAL-0004",
+      "main_intent": "接入手机通用性能字段时，怎样区分手机设备 ID、来源 ID 和字段键，数值需要先拼接单位吗？",
+      "grouping_reason": "主要用户目标：接入手机通用性能字段时，怎样区分手机设备 ID、来源 ID 和字段键，数值需要先拼接单位吗？ 决定性事实与条件：手机设备 ID 为 sdk.phone，来源 ID 为 sdk.phone.performance；字段以 sourceId 与 fieldId 共同识别。；数值字段传原始数值，不先拼成带单位的字符串。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "formatter-percent-range",
+      "case_id": "DBG-EVAL-0005",
+      "main_intent": "相机详情格式化电量时，负数和超过 100 的值各怎样显示？",
+      "grouping_reason": "主要用户目标：相机详情格式化电量时，负数和超过 100 的值各怎样显示？ 决定性事实与条件：formatPercent 对非负数添加 %；负数显示 --。；当前 formatPercent 不把大于 100 的数限制到 100。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "invalid-dev-default-battery",
+      "case_id": "DBG-EVAL-0006",
+      "main_intent": "相机 Dev 数据无效时，能把底层默认电量 100 作为有效电量展示吗？",
+      "grouping_reason": "主要用户目标：相机 Dev 数据无效时，能把底层默认电量 100 作为有效电量展示吗？ 决定性事实与条件：不能。应按 pktVersion != -1 判断 Dev 数据有效性；无效时 devStatus 整体为空，避免把底层默认电量 100 当作真实状态。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "state-incremental-null",
+      "case_id": "DBG-EVAL-0007",
+      "main_intent": "StateStore 更新一张只包含部分字段的 map 时，遗漏字段、显式 null 和空 map 分别代表什么？",
+      "grouping_reason": "主要用户目标：StateStore 更新一张只包含部分字段的 map 时，遗漏字段、显式 null 和空 map 分别代表什么？ 决定性事实与条件：updateFields 是增量合并，未出现的字段保留原值。；显式 null 删除对应字段。；空 map 直接返回；删除后会清理空的嵌套 map。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "state-copy-depth",
+      "case_id": "DBG-EVAL-0008",
+      "main_intent": "调用 StateStore.getFields 得到 map 后，修改其中可变对象是否一定不会影响缓存？",
+      "grouping_reason": "主要用户目标：调用 StateStore.getFields 得到 map 后，修改其中可变对象是否一定不会影响缓存？ 决定性事实与条件：getFields 返回 map 的复制，不能把这个保证扩展为对内部 Any 对象的深复制；调用方不应依赖它隔离可变对象修改。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "selection-null-empty",
+      "case_id": "DBG-EVAL-0009",
+      "main_intent": "浮窗字段选择中的 null 和空列表有什么区别，用户取消所有选择后会自动恢复默认项吗？",
+      "grouping_reason": "主要用户目标：浮窗字段选择中的 null 和空列表有什么区别，用户取消所有选择后会自动恢复默认项吗？ 决定性事实与条件：null 表示尚未配置，走默认字段；空列表表示用户主动不选任何项。；主动全不选不应被自动恢复默认项。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "overlay-device-disambiguation",
+      "case_id": "DBG-EVAL-0010",
+      "main_intent": "同一来源绑定了多台相机时，悬浮窗会怎样决定读取哪台设备？",
+      "grouping_reason": "主要用户目标：同一来源绑定了多台相机时，悬浮窗会怎样决定读取哪台设备？ 决定性事实与条件：相机来源除来源绑定关系外，还要求设备 ID 与 currentCameraDeviceId 一致。；无法唯一确定设备时不读值，不随机取第一台。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "hotspot-meaning-coverage",
+      "case_id": "DBG-EVAL-0011",
+      "main_intent": "热区红框是按什么条件选出 View 的，它能证明实际点击必然生效吗？",
+      "grouping_reason": "主要用户目标：热区红框是按什么条件选出 View 的，它能证明实际点击必然生效吗？ 决定性事实与条件：候选为可见且可点击、可长按或属于滚动容器的 View，并排除包装层自身。；红框来自 View 坐标转换与绘制，不等于已精确扣除遮挡或证明业务点击回调成功。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "app-log-file-selection",
+      "case_id": "DBG-EVAL-0012",
+      "main_intent": "现场导出勾选 App 日志后，系统按什么规则选择日志文件？",
+      "grouping_reason": "主要用户目标：现场导出勾选 App 日志后，系统按什么规则选择日志文件？ 决定性事实与条件：从 DirectoryPath.getLogPath 扫描可读普通文件，选 lastModified 最大的一份。；这是文件选择规则，不代表按日志记录时间逐行筛选了用户指定区间。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "camera-top-identity-copy",
+      "case_id": "DBG-EVAL-0013",
+      "main_intent": "相机详情顶部显示的身份尾号如何产生，复制全部文本也只含尾号吗？",
+      "grouping_reason": "主要用户目标：相机详情顶部显示的身份尾号如何产生，复制全部文本也只含尾号吗？ 决定性事实与条件：顶部优先取 SN，缺失时取 uniKey，再显示后四位。；复制全部文本包含完整 SN 与 uniKey，顶部尾号不等于复制内容全面脱敏。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "architecture-parallel-consumers",
+      "case_id": "DBG-EVAL-0014",
+      "main_intent": "当前架构中旧快照链路和新通用字段链路分别服务哪些展示，为什么不能直接把它们混成同一套设备值？",
+      "grouping_reason": "主要用户目标：当前架构中旧快照链路和新通用字段链路分别服务哪些展示，为什么不能直接把它们混成同一套设备值？ 决定性事实与条件：旧路径以 CameraDebugSnapshot 和 PerformanceSnapshot 为中心，供主面板、相机详情和导出读取。；新路径 PhonePerformanceSource 经接收器更新 StateStore，供浮窗通用存储读取。；通用存储能容纳多设备不等于旧相机入口已迁移；页面不能混用不同设备缓存。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "registry-state-receiver-division",
+      "case_id": "DBG-EVAL-0015",
+      "main_intent": "设备字段链路里的 Registry、StateStore 和 Receiver 分别负责什么？",
+      "grouping_reason": "主要用户目标：设备字段链路里的 Registry、StateStore 和 Receiver 分别负责什么？ 决定性事实与条件：Registry 负责定义与绑定，StateStore 负责实时值，Receiver 组合两者。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "runtime-release-order",
+      "case_id": "DBG-EVAL-0016",
+      "main_intent": "手动释放 Debug SDK 时，Runtime 中各类资源应按什么顺序收尾？",
+      "grouping_reason": "主要用户目标：手动释放 Debug SDK 时，Runtime 中各类资源应按什么顺序收尾？ 决定性事实与条件：先停止 activeDataProvider。；随后释放悬浮窗，再移除性能转发监听并释放性能采集器。；然后注销相机事件、释放热区，最后丢弃注册、状态和配置组件引用；SDK.release 还复位自身标记。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "network-environment-switch",
+      "case_id": "DBG-EVAL-0017",
+      "main_intent": "测试人员在主面板切换测试网络环境后，还需要做什么才能按文档完成操作？",
+      "grouping_reason": "主要用户目标：测试人员在主面板切换测试网络环境后，还需要做什么才能按文档完成操作？ 决定性事实与条件：开关保存 BaseUrlManager.NET_DEBUG_MODE_KEY 的布尔值，默认值来自 BuildEnvProxy.isDebug。；保存后需要重启应用；不能仅凭开关立即变化断言所有现有客户端已切换网络环境。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "performance-foreground-lifecycle",
+      "case_id": "DBG-EVAL-0018",
+      "main_intent": "按当前手机性能采集机制，应用前后台切换时如何启动和停止采样，采样耗时用什么时间基准？",
+      "grouping_reason": "主要用户目标：按当前手机性能采集机制，应用前后台切换时如何启动和停止采样，采样耗时用什么时间基准？ 决定性事实与条件：以 started Activity 计数管理：从 0 到 1 启动，全部停止时取消采样。；Handler 约每 1000 毫秒调度，实际间隔用 elapsedRealtime 计算，不能将每次间隔视作严格一秒。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "camera-name-late-callback",
+      "case_id": "DBG-EVAL-0019",
+      "main_intent": "相机快照没有名称时如何查询并避免重复请求，设备切换后的旧回调如何处理？",
+      "grouping_reason": "主要用户目标：相机快照没有名称时如何查询并避免重复请求，设备切换后的旧回调如何处理？ 决定性事实与条件：通过 DeviceCore.queryDeviceName 单独查询，以集合限制同一 uniKey 的重复请求；名称不属于 0x070 大包字段。；查询失败或暂未刷新时，10000 毫秒后解除请求限制。；回调先检查 monitor 仍注册且当前快照 uniKey 相同，避免把前一台设备名称写入新设备快照。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "camera-detail-visible-subscriptions",
+      "case_id": "DBG-EVAL-0020",
+      "main_intent": "相机详情页进入和离开可见状态时应怎样订阅数据，离开页面会关闭全局相机监控吗？",
+      "grouping_reason": "主要用户目标：相机详情页进入和离开可见状态时应怎样订阅数据，离开页面会关闭全局相机监控吗？ 决定性事实与条件：详情页在 onStart 订阅，在 onStop 取消页面订阅。；页面退出不负责停止全局相机事件监控，不能用页面退出来代替全局资源释放。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "receiver-registration-preconditions",
+      "case_id": "DBG-EVAL-0021",
+      "main_intent": "一个新设备来源第一次向 DebugDataReceiverImpl 更新字段前，必须满足哪些注册和绑定条件？",
+      "grouping_reason": "主要用户目标：一个新设备来源第一次向 DebugDataReceiverImpl 更新字段前，必须满足哪些注册和绑定条件？ 决定性事实与条件：先注册设备与来源；设备和来源之间无资料要求的先后依赖。；来源存在后才能 registerFields；设备与来源都存在后才能 bindSource。；updateFields 前来源须已绑定该设备；未绑定会返回，不会隐式创建设备。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "source-unregister-global-cleanup",
+      "case_id": "DBG-EVAL-0022",
+      "main_intent": "一个来源已经停止服务全部设备，注销来源应清哪些值和注册关系，注销单个设备能替代吗？",
+      "grouping_reason": "主要用户目标：一个来源已经停止服务全部设备，注销来源应清哪些值和注册关系，注销单个设备能替代吗？ 决定性事实与条件：unregisterSource 清所有设备该来源的实时值，再删除来源字段与绑定。；注销某设备只处理该设备，不等于删除全局来源；其他设备可能仍使用同一来源。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "selection-group-over-limit",
+      "case_id": "DBG-EVAL-0023",
+      "main_intent": "浮窗勾选整个字段分组后会超过数量上限，选择器应怎么处理，能否自动只取前几项？",
+      "grouping_reason": "主要用户目标：浮窗勾选整个字段分组后会超过数量上限，选择器应怎么处理，能否自动只取前几项？ 决定性事实与条件：先形成整组选择候选并检查上限；浮窗上限为 8。；整组候选超限就拒绝本次变化并保留原选择，不能自动截取前几项。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "floating-drag-position",
+      "case_id": "DBG-EVAL-0024",
+      "main_intent": "当前浮窗怎样拖动并保存位置，Activity 暂停后会怎样处理浮窗？",
+      "grouping_reason": "主要用户目标：当前浮窗怎样拖动并保存位置，Activity 暂停后会怎样处理浮窗？ 决定性事实与条件：从文本拖动区域用 raw 坐标差移动并做边界限制，按钮区域不作为同样的拖动入口。；UP 或 CANCEL 时将 lastX、lastY 保存在内存。；Activity 暂停时 detach 浮窗并关闭弹窗，但保留启用状态以便后续恢复。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "hotspot-enable-draw-listener",
+      "case_id": "DBG-EVAL-0025",
+      "main_intent": "在业务 Activity 开启热区后，内容层如何包装，滚动监听如何随包装层挂载和卸载管理？",
+      "grouping_reason": "主要用户目标：在业务 Activity 开启热区后，内容层如何包装，滚动监听如何随包装层挂载和卸载管理？ 决定性事实与条件：Activity resumed 时检查内容首个子 View，已有 HighlightFrameLayout 则复用，否则包装内容。；包装层 attach 时注册滚动监听、detach 时注销；开启检测时触发更新。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "zip-failure-retention",
+      "case_id": "DBG-EVAL-0026",
+      "main_intent": "ZIP 写入失败与成功时各如何清理文件，用户取消系统分享是否有立即删除产物的步骤？",
+      "grouping_reason": "主要用户目标：ZIP 写入失败与成功时各如何清理文件，用户取消系统分享是否有立即删除产物的步骤？ 决定性事实与条件：写入失败时尝试删除未完成 ZIP 并重新抛出异常，删除返回值没有完整清理报告。；成功后按最后修改时间保留最近五个 ZIP，清理更旧 ZIP。；系统分享取消没有专门的立即删除回调，不能套用旧模拟资料中的取消即删除规则。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "share-content-uri-setup",
+      "case_id": "DBG-EVAL-0027",
+      "main_intent": "把导出的 ZIP 交给系统分享时，URI、authority、Intent 和文件目录必须怎样对应？",
+      "grouping_reason": "主要用户目标：把导出的 ZIP 交给系统分享时，URI、authority、Intent 和文件目录必须怎样对应？ 决定性事实与条件：用 FileProvider.getUriForFile 创建 content URI，authority 为当前 packageName 加 .debug.fileprovider，并与变体 Manifest 的 applicationId 对应。；Intent 使用 ACTION_SEND、application/zip、EXTRA_STREAM、ClipData 和 FLAG_GRANT_READ_URI_PERMISSION，只授予对应 URI 的临时读取权限。；真实导出文件须落在 debug_file_paths.xml 声明的 external-files-path 或 files-path 根下 OBSBOT/DebugExport 相对范围内。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "export-success-chain",
+      "case_id": "DBG-EVAL-0028",
+      "main_intent": "按当前现场导出流程，读取页面选项之后，到启动系统选择器之前有哪些必要阶段和失败出口？",
+      "grouping_reason": "主要用户目标：按当前现场导出流程，读取页面选项之后，到启动系统选择器之前有哪些必要阶段和失败出口？ 决定性事实与条件：先校验空选择；空选择或选中 App 日志却无日志文件时停止。；到 IO 读取所选日志与状态快照，再写 ZIP。；ZIP 写入失败时尝试删除未完成文件并返回失败。；成功后清理并保留最近五份，返回 ZIP；分享端先创建 FileProvider content URI，再 ACTION_SEND 授权并启动 chooser。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "diagnose-missing-display-layers",
+      "case_id": "DBG-EVAL-0029",
+      "main_intent": "相机详情或浮窗显示缺失值时，维护者应按哪些层排查，能否直接认定硬件故障？",
+      "grouping_reason": "主要用户目标：相机详情或浮窗显示缺失值时，维护者应按哪些层排查，能否直接认定硬件故障？ 决定性事实与条件：先区分无设备、无事件、无有效分组、无注册、无绑定、无实时值、设备选择不唯一和格式类型错误；不能先认定硬件坏了。；相机检查 uniKey、状态查询、Mapper 的 Dev 判定、最近快照时间和页面监听。；通用字段检查 Registry 与 StateStore；浮窗还检查启用状态、当前 Activity 和当前相机 ID。这些检查没有资料规定的唯一总顺序。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "build-variant-verification-order",
+      "case_id": "DBG-EVAL-0030",
+      "main_intent": "准备核验 Debug 编译隔离时，模块依赖、实际构建和产物检查应怎样安排，CI 记录应包含什么？",
+      "grouping_reason": "主要用户目标：准备核验 Debug 编译隔离时，模块依赖、实际构建和产物检查应怎样安排，CI 记录应包含什么？ 决定性事实与条件：先检查模块依赖约束，再按实际任务名构建允许变体，并检查依赖和 APK 内容。；发布包不能只查类，还要检查 Manifest、资源、SPI、依赖与初始化入口。；CI 证据要绑定分支、提交、变体、任务及产物；这些核验步骤本身不等于已经执行成功。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "stale-camera-after-event-error",
+      "case_id": "DBG-EVAL-0031",
+      "main_intent": "相机事件处理报错后界面仍有旧数据，应如何解释该数据与主面板的大包更新提示？",
+      "grouping_reason": "主要用户目标：相机事件处理报错后界面仍有旧数据，应如何解释该数据与主面板的大包更新提示？ 决定性事实与条件：事件异常会被捕获，旧快照可能仍在，不能把有值当作刚收到新的状态。；主面板用当前时间与 receivedAtMillis 比较，超过 2000 毫秒按更新过期提示解释；这个判定不等于已证明设备断开。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "voice-connection-derived-display",
+      "case_id": "DBG-EVAL-0032",
+      "main_intent": "接入相机详情的“语音设备已连接”显示时，Formatter 读什么属性，这个属性是怎样得到的？",
+      "grouping_reason": "主要用户目标：接入相机详情的“语音设备已连接”显示时，Formatter 读什么属性，这个属性是怎样得到的？ 决定性事实与条件：详情表达式为 formatBoolean(status.voiceDeviceAttached)，标签是 Connect / 语音设备已连接。；voiceDeviceAttached 是三个音频接入标记的逻辑或，属于计算字段，不是额外收到的协议字段。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "open-page-context-and-listeners",
+      "case_id": "DBG-EVAL-0033",
+      "main_intent": "从非 Activity 的 Context 打开 Debug 主页面时，入口标记和页面可见期监听应怎样配合？",
+      "grouping_reason": "主要用户目标：从非 Activity 的 Context 打开 Debug 主页面时，入口标记和页面可见期监听应怎样配合？ 决定性事实与条件：打开页面的 Intent 需要 FLAG_ACTIVITY_NEW_TASK。；主页面在 onStart 加入性能、相机、热区、浮窗开关和字段选择监听，onStop 移除并关闭弹窗。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "zip-identity-privacy-cross",
+      "case_id": "DBG-EVAL-0034",
+      "main_intent": "转发相机现场 ZIP 前，文件名里的身份尾号与 camera_status.txt 中的身份内容各是什么，能据文件名判断已全面脱敏吗？",
+      "grouping_reason": "主要用户目标：转发相机现场 ZIP 前，文件名里的身份尾号与 camera_status.txt 中的身份内容各是什么，能据文件名判断已全面脱敏吗？ 决定性事实与条件：ZIP 文件名包含手机型号、手机 DID 后四位和时间片段。；相机状态使用格式化文本放入 camera_status.txt；formatCopyText 的全部复制内容包含完整 SN 和 uniKey。；因此不能用文件名的尾号规则证明内容已全面脱敏，应审查完整身份字段。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "phone-camera-temperature-units",
+      "case_id": "DBG-EVAL-0035",
+      "main_intent": "做手机与相机电池温度对比时，两类值能否直接按相同摄氏度口径计算温差？",
+      "grouping_reason": "主要用户目标：做手机与相机电池温度对比时，两类值能否直接按相同摄氏度口径计算温差？ 决定性事实与条件：手机电池温度来自广播 EXTRA_TEMPERATURE 除以 10，单位为摄氏度，缺失时 null。；相机电池温度当前按 getter 整数复制，单位与缩放需协议确认，不能直接假定摄氏度并计算同口径温差。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "port-camera-pc-count-source",
+      "case_id": "DBG-EVAL-0036",
+      "main_intent": "要把相机详情的 PC 连接数接入通用字段链路，旧页取值表达式是什么，第一次接收新值前要满足哪些注册绑定条件？",
+      "grouping_reason": "主要用户目标：要把相机详情的 PC 连接数接入通用字段链路，旧页取值表达式是什么，第一次接收新值前要满足哪些注册绑定条件？ 决定性事实与条件：旧页 router.pc_count 对应 PC 连接数，表达式为 formatInt(status.pcCount)。；注册字段前来源须存在，绑定前设备和来源须存在；字段 ID 在来源内唯一。；接收 updateFields 前该来源须已绑定目标设备，否则更新直接返回。；旧详情显示 ID 不自动等于 Registry 的 sourceId、fieldId，需要明确适配身份。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "registry-subscription-initial-ui-thread",
+      "case_id": "DBG-EVAL-0037",
+      "main_intent": "新接入页面订阅 Registry 后要显示已有定义并响应后续变化，首次读取和 View 更新线程应怎样处理？",
+      "grouping_reason": "主要用户目标：新接入页面订阅 Registry 后要显示已有定义并响应后续变化，首次读取和 View 更新线程应怎样处理？ 决定性事实与条件：Registry 注册监听不立即回放，页面需要主动读取当前注册信息。；Registry 回调运行在更新发起线程，不保证主线程；直接在回调操作 View 有线程风险，应转交主线程。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "hotspot-runtime-release-tree",
+      "case_id": "DBG-EVAL-0038",
+      "main_intent": "集成 SDK 释放时，热区清理在 Runtime 的哪个阶段，是否必须把业务内容从包装层拆出来？",
+      "grouping_reason": "主要用户目标：集成 SDK 释放时，热区清理在 Runtime 的哪个阶段，是否必须把业务内容从包装层拆出来？ 决定性事实与条件：Runtime 在注销相机事件后释放热区，再丢弃注册、状态和配置引用。；热区 release 在主线程关闭检测、注销生命周期并清理引用，但不拆除既有 View 包装树。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "fps-history-record-design",
+      "case_id": "DBG-EVAL-0039",
+      "main_intent": "二期要导出手机 FPS 时间曲线，采样值应沿用什么口径，历史记录还需增加什么信息并以什么格式导出？",
+      "grouping_reason": "主要用户目标：二期要导出手机 FPS 时间曲线，采样值应沿用什么口径，历史记录还需增加什么信息并以什么格式导出？ 决定性事实与条件：沿用采样期间 Choreographer 回调次数乘 1000 除以实际毫秒数的应用帧回调频率，不能改称相机或编码器帧率。；二期设计要求保存带时间戳的长时间性能采样记录，并导出 CSV；这是设计要求。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "camera-field-extension-expand-state",
+      "case_id": "DBG-EVAL-0040",
+      "main_intent": "给旧相机详情新增字段时，数据映射应沿哪些层修改，刷新列表又如何保持用户已展开的分组？",
+      "grouping_reason": "主要用户目标：给旧相机详情新增字段时，数据映射应沿哪些层修改，刷新列表又如何保持用户已展开的分组？ 决定性事实与条件：从底层 getter 到 Snapshot、Mapper 再到 Formatter 的稳定 ID、标签和值逐层维护。；详情按分组保留展开状态；媒体和设备组默认展开，其他默认折叠，刷新不应重置用户选择。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "initialization-static-contract-status",
+      "case_id": "DBG-EVAL-0041",
+      "main_intent": "在资料声明的基线版本，能把 Debug 初始化接口描述为已对齐且编译验证通过吗？",
+      "grouping_reason": "主要用户目标：在资料声明的基线版本，能把 Debug 初始化接口描述为已对齐且编译验证通过吗？ 决定性事实与条件：不能。IDebugService 有单参数和带 dependencies 的双参数 initialize，Impl 只实现单参数且调用 Runtime 单参数，但 Runtime 要求双参数。；API 引用了位于 Impl 的 DebugDependencies，构成类型边界问题；资料只是静态发现，未执行编译，不能报告编译通过。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "multi-device-foundation-not-migrated",
+      "case_id": "DBG-EVAL-0042",
+      "main_intent": "在本套基线资料中，通用设备状态存储已出现，是否就表示相机主面板和详情完成多设备迁移？",
+      "grouping_reason": "主要用户目标：在本套基线资料中，通用设备状态存储已出现，是否就表示相机主面板和详情完成多设备迁移？ 决定性事实与条件：不能。当前 CameraDebugMonitor 仍持有单份 latestSnapshot，供相机主面板、详情和导出读取。；通用注册与状态结构是基础能力，手机来源已接通不能证明相机入口完成迁移。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "field-target-config-maturity",
+      "case_id": "DBG-EVAL-0043",
+      "main_intent": "基线文档里存在主面板、浮窗、详情字段配置目标枚举，能否据此认为所有页面已统一配置且持久化？",
+      "grouping_reason": "主要用户目标：基线文档里存在主面板、浮窗、详情字段配置目标枚举，能否据此认为所有页面已统一配置且持久化？ 决定性事实与条件：不能。MAIN_PANEL、FLOATING_WINDOW、DETAIL_PAGE 的限制定义不等于全部页面已接通；表格说明主要已接通的是浮窗。；当前配置保存在内存，不是 SharedPreferences 持久化。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "floating-fold-snap-not-current",
+      "case_id": "DBG-EVAL-0044",
+      "main_intent": "以资料的当前实现为限，浮窗拖动松手后是否已支持折叠和自动吸边？",
+      "grouping_reason": "主要用户目标：以资料的当前实现为限，浮窗拖动松手后是否已支持折叠和自动吸边？ 决定性事实与条件：当前仅在 UP/CANCEL 保存内存位置，没有折叠或吸边完整实现。；不能把当前自由拖动和位置恢复描述为已完成折叠吸边。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "advanced-debug-placeholder",
+      "case_id": "DBG-EVAL-0045",
+      "main_intent": "资料所述当前主面板中的连接诊断和固件通信入口，能否用于执行完整诊断和指令 Mock？",
+      "grouping_reason": "主要用户目标：资料所述当前主面板中的连接诊断和固件通信入口，能否用于执行完整诊断和指令 Mock？ 决定性事实与条件：不能把入口当作完整能力：当前为开发中占位，点击显示开发中。；当前能力边界不支持据此宣称诊断和通信 Mock 已实现。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "export-current-target-matrix",
+      "case_id": "DBG-EVAL-0046",
+      "main_intent": "在本套资料的基线版本，现场日志导出能提供什么，时间区间、相机日志和性能历史分别处于什么阶段？",
+      "grouping_reason": "主要用户目标：在本套资料的基线版本，现场日志导出能提供什么，时间区间、相机日志和性能历史分别处于什么阶段？ 决定性事实与条件：当前列是最新 App 日志与快照 ZIP。；二期目标列是时间区间、相机日志和性能历史，不能把同一行目标列当成当前实现。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "sdk-independence-and-start-status",
+      "case_id": "DBG-EVAL-0047",
+      "main_intent": "按基线宿主适配文档，能宣称通用 SDK 已完全摆脱 Live 依赖并已在 Start 验证了吗？",
+      "grouping_reason": "主要用户目标：按基线宿主适配文档，能宣称通用 SDK 已完全摆脱 Live 依赖并已在 Start 验证了吗？ 决定性事实与条件：不能。存在 Provider 契约，但未在核对范围发现明确实现 DebugDataProvider 的 Live Adapter，旧相机链路仍直接依赖宿主组件。；UI/Domain/Data 是逻辑分层，不等于已经拆成三个独立 AAR。；Start 仓库与接入验证没有在本次资料核对中完成，跨 App 结论需要独立构建与设备证据。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "flavor-config-versus-proof",
+      "case_id": "DBG-EVAL-0048",
+      "main_intent": "基线 Gradle 已配置 Flavor 隔离后，是否可以把 Release 不含 Debug 实现和 Jenkins 通过都写成验收结果？",
+      "grouping_reason": "主要用户目标：基线 Gradle 已配置 Flavor 隔离后，是否可以把 Release 不含 Debug 实现和 Jenkins 通过都写成验收结果？ 决定性事实与条件：不能。允许变体为 withDebugDebug、withDebugStaging、withoutDebugRelease，这是配置证据。；还需真实依赖图、实际产物内容与 Jenkins 构建证据；资料中的核验要求不证明本轮已通过。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "verification-plan-no-results",
+      "case_id": "DBG-EVAL-0049",
+      "main_intent": "基线资料中写有 Debug 多设备与效率验收方法，能否引用为已完成测试和效率提升的证明？",
+      "grouping_reason": "主要用户目标：基线资料中写有 Debug 多设备与效率验收方法，能否引用为已完成测试和效率提升的证明？ 决定性事实与条件：不能。验证文档是待执行方法与记录要求，不是已执行结果。；效率需固定任务、基线和样本数测量，当前表中效率项目为未测量，不能编造提升比例。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "phase2-export-policy-design",
+      "case_id": "DBG-EVAL-0050",
+      "main_intent": "阅读二期目标架构时，如何描述统一导出对多来源数据和部分失败的设计，哪些接口细节仍不能当作现有实现？",
+      "grouping_reason": "主要用户目标：阅读二期目标架构时，如何描述统一导出对多来源数据和部分失败的设计，哪些接口细节仍不能当作现有实现？ 决定性事实与条件：这是二期设计：统一任务汇集区间 App 日志、固件支持的相机日志、性能记录及最新应用设备快照。；各来源返回成功、缺失或失败，再按明确策略决定是否生成产物；不能据此杜撰已落地的部分失败策略。；运行参数来源、相机日志接口、Mock 注入点、权限与跨 App 资源依赖仍待确认，不编造接口签名或协议编号。。只选本族一个代表；共享背景原文不自动构成同族。"
+    },
+    {
+      "family_id": "missing-measured-monitor-overhead",
+      "case_id": "DBG-EVAL-0051",
+      "main_intent": "开启手机性能悬浮窗后，CPU 平均额外开销和 P95 帧耗时分别是多少？",
+      "grouping_reason": "独立边界目标：开启手机性能悬浮窗后，CPU 平均额外开销和 P95 帧耗时分别是多少？；决定性条件为 insufficient_evidence：这批资料不足以确定开启浮窗的 CPU 额外开销与 P95 帧耗时实测值；需要补充对应实测记录或已确认接口资料。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "missing-camera-log-endpoint",
+      "case_id": "DBG-EVAL-0052",
+      "main_intent": "二期获取相机日志应调用哪个已确认的固件协议编号，请给出请求字段定义？",
+      "grouping_reason": "独立边界目标：二期获取相机日志应调用哪个已确认的固件协议编号，请给出请求字段定义？；决定性条件为 insufficient_evidence：这批资料不足以确定已确认的相机日志协议编号与请求字段；需要补充对应实测记录或已确认接口资料。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "missing-start-device-run-results",
+      "case_id": "DBG-EVAL-0053",
+      "main_intent": "Start 接入 Debug SDK 后，在哪些真实设备型号上完成了哪几项运行测试？",
+      "grouping_reason": "独立边界目标：Start 接入 Debug SDK 后，在哪些真实设备型号上完成了哪几项运行测试？；决定性条件为 insufficient_evidence：这批资料不足以确定Start 的真实设备型号和逐项运行结果；需要补充对应实测记录或已确认接口资料。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "missing-mock-rule-wire-contract",
+      "case_id": "DBG-EVAL-0054",
+      "main_intent": "二期指令 Mock 的具体规则 JSON 字段和超时响应错误码是什么？",
+      "grouping_reason": "独立边界目标：二期指令 Mock 的具体规则 JSON 字段和超时响应错误码是什么？；决定性条件为 insufficient_evidence：这批资料不足以确定Mock 规则 JSON 字段和超时响应错误码；需要补充对应实测记录或已确认接口资料。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "outside-cooking",
+      "case_id": "DBG-EVAL-0055",
+      "main_intent": "请给我一份四人份红烧肉的详细菜谱。",
+      "grouping_reason": "独立边界目标：请给我一份四人份红烧肉的详细菜谱。；决定性条件为 out_of_scope：这个请求属于烹饪，与 Debug 项目文档助手范围无关。可以引导使用通用烹饪助手。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "outside-wedding-poem",
+      "case_id": "DBG-EVAL-0056",
+      "main_intent": "帮我写一首婚礼祝福诗。",
+      "grouping_reason": "独立边界目标：帮我写一首婚礼祝福诗。；决定性条件为 out_of_scope：这个请求属于祝福诗创作，与 Debug 项目文档助手范围无关。可以引导使用通用写作助手。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "outside-travel-plan",
+      "case_id": "DBG-EVAL-0057",
+      "main_intent": "请规划一条三天的巴黎旅游路线。",
+      "grouping_reason": "独立边界目标：请规划一条三天的巴黎旅游路线。；决定性条件为 out_of_scope：这个请求属于旅行规划，与 Debug 项目文档助手范围无关。可以引导使用旅行规划服务。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "clarify-target-field-limit",
+      "case_id": "DBG-EVAL-0058",
+      "main_intent": "我要配置主面板或悬浮窗的展示字段，这次最多可以选多少个？",
+      "grouping_reason": "独立边界目标：我要配置主面板或悬浮窗的展示字段，这次最多可以选多少个？；决定性条件为 clarify：先确认这次要配置主面板还是悬浮窗，再给对应上限。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "clarify-source-clear-scope",
+      "case_id": "DBG-EVAL-0059",
+      "main_intent": "要清理一个调试数据来源，应该调用哪个清理接口？",
+      "grouping_reason": "独立边界目标：要清理一个调试数据来源，应该调用哪个清理接口？；决定性条件为 clarify：先确认要仅清实时值并保留来源，还是连来源定义和绑定一起注销。。本族只选一个代表，不与同义改写拆分。"
+    },
+    {
+      "family_id": "clarify-listener-replay-kind",
+      "case_id": "DBG-EVAL-0060",
+      "main_intent": "新页面订阅 Debug 数据监听后，要不要主动读取当前数据才能显示首屏？",
+      "grouping_reason": "独立边界目标：新页面订阅 Debug 数据监听后，要不要主动读取当前数据才能显示首屏？；决定性条件为 clarify：先确认订阅的是性能/相机快照监听，还是 Registry 注册信息监听。。本族只选一个代表，不与同义改写拆分。"
+    }
+  ],
+  "allocations": [
+    {
+      "family_id": "clarify-listener-replay-kind",
+      "stratum": "boundary:clarify",
+      "rank": 1,
+      "allocation_key": "808656dc5c728ea25c00721ad124654acc0d60a9affdd14e8af230c05f71f341",
+      "split": "dev"
+    },
+    {
+      "family_id": "clarify-source-clear-scope",
+      "stratum": "boundary:clarify",
+      "rank": 2,
+      "allocation_key": "c401fa3edcc1585391ebc024785260f6969d311b75838462710a0d71466c45fc",
+      "split": "dev"
+    },
+    {
+      "family_id": "clarify-target-field-limit",
+      "stratum": "boundary:clarify",
+      "rank": 3,
+      "allocation_key": "ec8977c3727e565dfd9aca8108982201743587359e2fa963d0c6d5a0eee1ad45",
+      "split": "test"
+    },
+    {
+      "family_id": "missing-measured-monitor-overhead",
+      "stratum": "boundary:insufficient_evidence",
+      "rank": 1,
+      "allocation_key": "179bcff33d922405d2c677d5fcc931d0adead599b30bffb4b9f856010ff16308",
+      "split": "dev"
+    },
+    {
+      "family_id": "missing-camera-log-endpoint",
+      "stratum": "boundary:insufficient_evidence",
+      "rank": 2,
+      "allocation_key": "1cfd990ec79ad36ed49a2c9019949d51955489f664fccc95174fdb22dc9c2425",
+      "split": "dev"
+    },
+    {
+      "family_id": "missing-mock-rule-wire-contract",
+      "stratum": "boundary:insufficient_evidence",
+      "rank": 3,
+      "allocation_key": "7b5b8e2598e2bf22d728d71e0a0f7a0d2129c13a7f6953efd80846920baa7bb4",
+      "split": "dev"
+    },
+    {
+      "family_id": "missing-start-device-run-results",
+      "stratum": "boundary:insufficient_evidence",
+      "rank": 4,
+      "allocation_key": "e6c6a3c8e6104459a04badcdc0c045a3274392ac07c8a86468be9b20cb84c17b",
+      "split": "test"
+    },
+    {
+      "family_id": "outside-travel-plan",
+      "stratum": "boundary:out_of_scope",
+      "rank": 1,
+      "allocation_key": "117382fc48b33d5ad5ba5f8ab92f528208bf12e97e011b3288309501ccbbeeed",
+      "split": "dev"
+    },
+    {
+      "family_id": "outside-cooking",
+      "stratum": "boundary:out_of_scope",
+      "rank": 2,
+      "allocation_key": "2228b9bf64a5ba07d4dba36968ef1f879ec3dc2aaa7c08ebe9a2678b79b20632",
+      "split": "dev"
+    },
+    {
+      "family_id": "outside-wedding-poem",
+      "stratum": "boundary:out_of_scope",
+      "rank": 3,
+      "allocation_key": "5f5c3366c12456dbfa5c544dc66c04fac96ca1977df9af240c3509c00a0929b8",
+      "split": "test"
+    },
+    {
+      "family_id": "stale-camera-after-event-error",
+      "stratum": "cross_document",
+      "rank": 1,
+      "allocation_key": "2922f15995fa554dc8a5f095aa73d5f7400a59d8a9d48455383f1726fb54d2ca",
+      "split": "dev"
+    },
+    {
+      "family_id": "fps-history-record-design",
+      "stratum": "cross_document",
+      "rank": 2,
+      "allocation_key": "452db62233acc6f3bff311867583b5e799f826abca839982a673a0024aa72485",
+      "split": "dev"
+    },
+    {
+      "family_id": "zip-identity-privacy-cross",
+      "stratum": "cross_document",
+      "rank": 3,
+      "allocation_key": "45a8448b3076530fff3ee2cf4a87cb22125a7dd734af64705169df58bef1e376",
+      "split": "dev"
+    },
+    {
+      "family_id": "port-camera-pc-count-source",
+      "stratum": "cross_document",
+      "rank": 4,
+      "allocation_key": "466f261aa250c8da927feddcf7444efc84acb71014f3c35259726f0f51595936",
+      "split": "dev"
+    },
+    {
+      "family_id": "voice-connection-derived-display",
+      "stratum": "cross_document",
+      "rank": 5,
+      "allocation_key": "75c3ca1a8cd3cb93cd51e8d454361f9e8db6027df3743abb1dce039498efd6b2",
+      "split": "dev"
+    },
+    {
+      "family_id": "camera-field-extension-expand-state",
+      "stratum": "cross_document",
+      "rank": 6,
+      "allocation_key": "79dd9535ad7313d6574d171d34428841c6336d8311b141632ffefcf23b0064dc",
+      "split": "dev"
+    },
+    {
+      "family_id": "phone-camera-temperature-units",
+      "stratum": "cross_document",
+      "rank": 7,
+      "allocation_key": "89ab628189347dd3fef3f7a55c76bfe9af2d789375d872279201956752c9c364",
+      "split": "test"
+    },
+    {
+      "family_id": "open-page-context-and-listeners",
+      "stratum": "cross_document",
+      "rank": 8,
+      "allocation_key": "9c309ba976844e1eb2eea874b73df53db145c4da775d3ec567612ff4caa486ae",
+      "split": "test"
+    },
+    {
+      "family_id": "registry-subscription-initial-ui-thread",
+      "stratum": "cross_document",
+      "rank": 9,
+      "allocation_key": "d146ef56b25f3ed438a3fba1fc80ad1d55ed649e1058a4116ba1595ed8030a74",
+      "split": "test"
+    },
+    {
+      "family_id": "hotspot-runtime-release-tree",
+      "stratum": "cross_document",
+      "rank": 10,
+      "allocation_key": "e6d2c6b02cb0bc144017019a73479af091d022885891840358ff20d4c39e2f86",
+      "split": "test"
+    },
+    {
+      "family_id": "pss-heap-zero",
+      "stratum": "fact",
+      "rank": 1,
+      "allocation_key": "5109a0e170802a711fecb62b7b1cfe1da51c5e2e49805af1befc7620e9504082",
+      "split": "dev"
+    },
+    {
+      "family_id": "spi-missing-implementation",
+      "stratum": "fact",
+      "rank": 2,
+      "allocation_key": "525d682629f6b8d8892f129fa1e555e24577d7f995ab7c86917ca77627ac63b3",
+      "split": "dev"
+    },
+    {
+      "family_id": "camera-top-identity-copy",
+      "stratum": "fact",
+      "rank": 3,
+      "allocation_key": "58b233230f2b33d38ebb748f7abd945958d1ff179582146f73177f325c74794c",
+      "split": "dev"
+    },
+    {
+      "family_id": "cpu-normalized-process",
+      "stratum": "fact",
+      "rank": 4,
+      "allocation_key": "608ff5554670bad9479652a3a5d4b3c1683e4646c8a43409fd35d5412a6418d4",
+      "split": "dev"
+    },
+    {
+      "family_id": "phone-source-field-identity",
+      "stratum": "fact",
+      "rank": 5,
+      "allocation_key": "6dcdf09e1399741d331afde66ad8a37f136e5caafde3b02f00f4d255ddf145d9",
+      "split": "dev"
+    },
+    {
+      "family_id": "architecture-parallel-consumers",
+      "stratum": "fact",
+      "rank": 6,
+      "allocation_key": "7c8d2ed27a02371e91e9fe277956a17b040eacc1b6efbe650363ea297c8140a8",
+      "split": "dev"
+    },
+    {
+      "family_id": "hotspot-meaning-coverage",
+      "stratum": "fact",
+      "rank": 7,
+      "allocation_key": "81b3cdc415895494d35f7f9213404c96c1c2fd67de3b26e8318a92a114d5cc72",
+      "split": "dev"
+    },
+    {
+      "family_id": "overlay-device-disambiguation",
+      "stratum": "fact",
+      "rank": 8,
+      "allocation_key": "8554a0e8ef6ee4e9d0ff00bd0c494a7dcdd951b476912cb3cd8e1130827908aa",
+      "split": "dev"
+    },
+    {
+      "family_id": "invalid-dev-default-battery",
+      "stratum": "fact",
+      "rank": 9,
+      "allocation_key": "a85582a0fe6c154d76c267e1ee3a94f92adaf945244687034d836d74232cac66",
+      "split": "dev"
+    },
+    {
+      "family_id": "selection-null-empty",
+      "stratum": "fact",
+      "rank": 10,
+      "allocation_key": "ab619159de170c7c446be11f5dc8ffe723793182d7d3a0dddffcc46f263acfe8",
+      "split": "dev"
+    },
+    {
+      "family_id": "state-copy-depth",
+      "stratum": "fact",
+      "rank": 11,
+      "allocation_key": "c2f330811a83bd0b7accf3bd848d9d197535a52a43684e6894347889a549bb44",
+      "split": "test"
+    },
+    {
+      "family_id": "formatter-percent-range",
+      "stratum": "fact",
+      "rank": 12,
+      "allocation_key": "c7ad2d5a321c5d463d3791ef1554341108337b2582440b739c65ae6549d50d11",
+      "split": "test"
+    },
+    {
+      "family_id": "registry-state-receiver-division",
+      "stratum": "fact",
+      "rank": 13,
+      "allocation_key": "d421042a94227b095f808f28ff086f6dc062ece669aeda8e9257b4df6eddb185",
+      "split": "test"
+    },
+    {
+      "family_id": "app-log-file-selection",
+      "stratum": "fact",
+      "rank": 14,
+      "allocation_key": "ec84066769bd961f8f7ebbadbe37871198b5abe7f030c1f8a172c04a65e78156",
+      "split": "test"
+    },
+    {
+      "family_id": "state-incremental-null",
+      "stratum": "fact",
+      "rank": 15,
+      "allocation_key": "f90dd19edc6825b6a25f826d236a7d3fbf664c6470fcfb6d67b1f2369d9d501d",
+      "split": "test"
+    },
+    {
+      "family_id": "camera-name-late-callback",
+      "stratum": "operation",
+      "rank": 1,
+      "allocation_key": "157d1018792498fb9c98e1c969d8e89b8f7f2362929aba768e75caaf648e14bd",
+      "split": "dev"
+    },
+    {
+      "family_id": "camera-detail-visible-subscriptions",
+      "stratum": "operation",
+      "rank": 2,
+      "allocation_key": "1c6332b0e13f5e3fadd5eb9ea05398bf9d834291dc4132eac28b71c5089380f1",
+      "split": "dev"
+    },
+    {
+      "family_id": "network-environment-switch",
+      "stratum": "operation",
+      "rank": 3,
+      "allocation_key": "24694bfa719f8e5cad2a011c97560797d35f5814fb642dcb97fe498ab55c5f63",
+      "split": "dev"
+    },
+    {
+      "family_id": "hotspot-enable-draw-listener",
+      "stratum": "operation",
+      "rank": 4,
+      "allocation_key": "2c81bcef8356208ec4c14bdabd422b2d652ff740a87929efd88b3f6419a17713",
+      "split": "dev"
+    },
+    {
+      "family_id": "share-content-uri-setup",
+      "stratum": "operation",
+      "rank": 5,
+      "allocation_key": "3868842ca1e638925a105a61c6a9d7ab316107a985c143c39884e2e8957fc25b",
+      "split": "dev"
+    },
+    {
+      "family_id": "floating-drag-position",
+      "stratum": "operation",
+      "rank": 6,
+      "allocation_key": "3e3ab80d9b4c0b2a19bd6b93b73765eaefa45127d8542ad8309cbba322692736",
+      "split": "dev"
+    },
+    {
+      "family_id": "zip-failure-retention",
+      "stratum": "operation",
+      "rank": 7,
+      "allocation_key": "4a90b0758bcdffd9768b6aa5087a67c8f1e140f6b21d9c1969df065b7cdbbfdf",
+      "split": "dev"
+    },
+    {
+      "family_id": "diagnose-missing-display-layers",
+      "stratum": "operation",
+      "rank": 8,
+      "allocation_key": "5d13b261af989a327f3c795a7994bcd409170a11d422141c8fd6ee756922d4de",
+      "split": "dev"
+    },
+    {
+      "family_id": "source-unregister-global-cleanup",
+      "stratum": "operation",
+      "rank": 9,
+      "allocation_key": "7f182458fd3b4ba3ff068273d6254ecaf3f25c5740e4483b9497b61ce4bc2509",
+      "split": "dev"
+    },
+    {
+      "family_id": "build-variant-verification-order",
+      "stratum": "operation",
+      "rank": 10,
+      "allocation_key": "83942bf496ef5cd274a79db418bfc923d78a8219bbe1a8f73d3fa9ea6b657b4f",
+      "split": "dev"
+    },
+    {
+      "family_id": "performance-foreground-lifecycle",
+      "stratum": "operation",
+      "rank": 11,
+      "allocation_key": "9317e74d698a362870844ec820a67b11aa0c48535af7ab4975db7ee40ab1f8b7",
+      "split": "test"
+    },
+    {
+      "family_id": "runtime-release-order",
+      "stratum": "operation",
+      "rank": 12,
+      "allocation_key": "9c2b72d173a317ee227fb328f3bfe8a970eb2698de64373fb368ef8ca84d100a",
+      "split": "test"
+    },
+    {
+      "family_id": "export-success-chain",
+      "stratum": "operation",
+      "rank": 13,
+      "allocation_key": "be042745a54b0696bba8118a5ec409bd6a1b327ad95c625c7817c12219a6ecd3",
+      "split": "test"
+    },
+    {
+      "family_id": "receiver-registration-preconditions",
+      "stratum": "operation",
+      "rank": 14,
+      "allocation_key": "da34ab05eca3bc0de661ada934fc18fa8ab8a0e1ba9b76f7f6b7cffc0e1bdaf1",
+      "split": "test"
+    },
+    {
+      "family_id": "selection-group-over-limit",
+      "stratum": "operation",
+      "rank": 15,
+      "allocation_key": "e6a108fbf4eb89c1b2a75818ac43541d96655d8c379681b434e175676527910e",
+      "split": "test"
+    },
+    {
+      "family_id": "export-current-target-matrix",
+      "stratum": "status",
+      "rank": 1,
+      "allocation_key": "149cc4cda4a4673d52cd01cf85612200e165fc1623c00167003cbdeb7a27c4fe",
+      "split": "dev"
+    },
+    {
+      "family_id": "floating-fold-snap-not-current",
+      "stratum": "status",
+      "rank": 2,
+      "allocation_key": "5fa68d5772826fabc043a7172fc70a0c82e2498b8d6a470376d2190fe9fcaf8b",
+      "split": "dev"
+    },
+    {
+      "family_id": "advanced-debug-placeholder",
+      "stratum": "status",
+      "rank": 3,
+      "allocation_key": "6f71bc282d5b35827c28399349dc795be26cb10e3d40853d113f4e03b1634ef5",
+      "split": "dev"
+    },
+    {
+      "family_id": "sdk-independence-and-start-status",
+      "stratum": "status",
+      "rank": 4,
+      "allocation_key": "8a946cd8b1fc340620719d0d053e84cd822861c13f195d60862d3cf899608c51",
+      "split": "dev"
+    },
+    {
+      "family_id": "field-target-config-maturity",
+      "stratum": "status",
+      "rank": 5,
+      "allocation_key": "8f2e73eecf81f0f65be80c33bcdd8fc59fc660abaf9b40fe5abc041b870eb0ce",
+      "split": "dev"
+    },
+    {
+      "family_id": "phase2-export-policy-design",
+      "stratum": "status",
+      "rank": 6,
+      "allocation_key": "a2a47e85983d4c5fa3288883fea815531d4bc175e2429a9e878c80073185aa83",
+      "split": "dev"
+    },
+    {
+      "family_id": "initialization-static-contract-status",
+      "stratum": "status",
+      "rank": 7,
+      "allocation_key": "af7a2df52372f408acf7a7ddc3e3b41824214b1b7350231aa5199e5385767d38",
+      "split": "dev"
+    },
+    {
+      "family_id": "flavor-config-versus-proof",
+      "stratum": "status",
+      "rank": 8,
+      "allocation_key": "b60e4dbdd595f1ee095694809e9f0c649a2591d10ffe6a3d6a9385586743457c",
+      "split": "test"
+    },
+    {
+      "family_id": "multi-device-foundation-not-migrated",
+      "stratum": "status",
+      "rank": 9,
+      "allocation_key": "cbb9e69271fc8220897dc78dcf566231a7cbb526d9646c24af297df96902cfc1",
+      "split": "test"
+    },
+    {
+      "family_id": "verification-plan-no-results",
+      "stratum": "status",
+      "rank": 10,
+      "allocation_key": "d80257585381c3f9f803bba15155e5ffdbc9b9c54a1f798e96a0db8827e79ccc",
+      "split": "test"
+    }
+  ],
+  "leakage_notes": [
+    "两个 split 共享固定知识文档是预期行为。",
+    "生成 Agent 已读取 test；本次不是严格盲测。",
+    "任何题目、答案、要点、标注均不得进入知识库或伪文档。",
+    "语义近重复与跨文档必要性仍需人工核对。"
+  ]
+}

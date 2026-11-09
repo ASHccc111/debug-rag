@@ -17,6 +17,7 @@ from debug_rag.ingestion.service import fingerprint
 from debug_rag.retrieval.lexical import TOKENIZER_VERSION, tokenize
 from debug_rag.storage.sqlite import (
     Document,
+    DocumentOrigin,
     DocumentRevision,
     GenerationDocument,
     IndexGeneration,
@@ -51,7 +52,7 @@ def snapshot(
             )
             .order_by(Document.source_key, SourceChunk.ordinal)
         )
-        rows, checked = [], set()
+        rows, checked, origins = [], set(), {}
         for chunk, revision, document in session.execute(query):
             meta = Metadata.model_validate(revision.metadata_json).model_dump(mode="json")
             if (
@@ -60,9 +61,21 @@ def snapshot(
             ):
                 raise RagError("source_scope_mismatch", "原文适用范围与索引清单不一致。", 409)
             if revision.revision_id not in checked:
-                digest = fingerprint(
-                    {"text": revision.raw_text, "metadata": meta, "format": revision.source_format}
-                )
+                identity = {
+                    "text": revision.raw_text,
+                    "metadata": meta,
+                    "format": revision.source_format,
+                }
+                origin = session.get(DocumentOrigin, revision.revision_id)
+                if origin is not None:
+                    identity["origin"] = origin.manifest
+                    if (
+                        hashlib.sha256(origin.original_bytes).hexdigest()
+                        != origin.manifest["original_sha256"]
+                    ):
+                        raise RagError("source_integrity_failed", "保存的原始文件校验失败。", 409)
+                    origins[revision.revision_id] = origin.manifest
+                digest = fingerprint(identity)
                 if digest != revision.fingerprint:
                     raise RagError("source_integrity_failed", "保存的文档版本校验失败。", 409)
                 checked.add(revision.revision_id)
@@ -97,6 +110,19 @@ def snapshot(
             or len(checked) != manifest["document_count"]
         ):
             raise RagError("source_count_mismatch", "原文数量与快照清单不一致。", 409)
+        for row in rows:
+            origin = origins.get(row["revision_id"])
+            if origin is not None:
+                row.update(
+                    original_sha256=origin["original_sha256"],
+                    extraction_warnings=origin["warnings"],
+                    source_locations=[
+                        block["locator"]
+                        for block in origin["blocks"]
+                        if block["start_char"] < row["end_char"]
+                        and block["end_char"] > row["start_char"]
+                    ],
+                )
         return dict(manifest), rows
 
 

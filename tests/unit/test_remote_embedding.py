@@ -19,6 +19,27 @@ from debug_rag.retrieval.remote_embedding import VikingEmbedder
 from debug_rag.storage.sqlite import ApiCall, create_database
 
 
+@pytest.mark.parametrize("status", [401, 403])
+def test_access_denied_is_explicit_without_provider_body_or_retry(remote, status):
+    settings, ledger = remote
+    requests = []
+
+    def deny(request):
+        requests.append(request)
+        return httpx.Response(
+            status, json={"code": "AccessDenied", "message": "private-provider-text"}
+        )
+
+    embedder = VikingEmbedder(settings, ledger, httpx.MockTransport(deny))
+    with pytest.raises(RagError) as caught:
+        embedder.encode_hybrid(["独立模拟问题"])
+    assert caught.value.code == "embedding_access_denied"
+    assert "private-provider-text" not in str(caught.value.public())
+    assert len(requests) == 1
+    assert embedder.last_calls[0]["http_status"] == status
+    assert ledger.summary()["unresolved_reserved_cny"] == "0.01"
+
+
 @pytest.fixture
 def remote(tmp_path, monkeypatch):
     monkeypatch.setattr(budget, "now_shanghai", lambda: datetime(2026, 11, 2, 12, tzinfo=SHANGHAI))
