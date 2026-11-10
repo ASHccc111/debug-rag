@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     max_input_tokens: int = Field(default=6000, ge=2000, le=6000)
     max_output_tokens: int = Field(default=1500, ge=100, le=1500)
     parent_expansion_enabled: bool = True
+    structured_recall_enabled: bool = True
+    compact_context_enabled: bool = True
     query_rewrite_enabled: bool = False
     rerank_enabled: bool = False
     rerank_api_key: SecretStr = SecretStr("")

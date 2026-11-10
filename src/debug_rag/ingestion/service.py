@@ -30,7 +30,12 @@ def fingerprint(value) -> str:
 
 
 def prepare_documents(
-    engine: Engine, kb_id: str, source: Path, config: ChunkConfig | None = None
+    engine: Engine,
+    kb_id: str,
+    source: Path,
+    config: ChunkConfig | None = None,
+    *,
+    replace_existing: bool = True,
 ) -> dict:
     if not kb_id or len(kb_id) > 100:
         raise IngestError([Issue("", "invalid_kb_id")])
@@ -45,6 +50,11 @@ def prepare_documents(
     config_key = fingerprint(config.model_dump())
     created_revisions = created_chunks = 0
     with Session(engine) as session, session.begin():
+        if not replace_existing:
+            session.connection().exec_driver_sql("BEGIN IMMEDIATE")
+            kb = session.get(KnowledgeBase, kb_id)
+            if (kb and kb.active_generation_id) or session.get(PreparedHead, kb_id):
+                raise IngestError([Issue("", "replace_confirmation_required")])
         existing = list(
             session.scalars(select(IndexGeneration).where(IndexGeneration.kb_id == kb_id))
         )

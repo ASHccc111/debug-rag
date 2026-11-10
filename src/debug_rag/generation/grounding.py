@@ -48,7 +48,23 @@ class ModelAnswer(BaseModel):
         return self
 
 
-def messages(question: str, evidence: list[dict], repair=False) -> list[dict]:
+def prompt_locations(row, compact):
+    locations = row["source_locations"]
+    if not compact:
+        return locations
+    seen = {}
+    for loc in locations:
+        if loc.get("format") == "pdf":
+            ref = {"format": "pdf", "page": loc["page"]}
+        elif "body_index" in loc:
+            ref = {"format": "docx", "body_index": loc["body_index"]}
+        else:
+            continue
+        seen[tuple(ref.items())] = ref
+    return list(seen.values())
+
+
+def messages(question: str, evidence: list[dict], repair=False, *, compact=False) -> list[dict]:
     payload = {
         "question": question,
         "evidence": [
@@ -62,7 +78,7 @@ def messages(question: str, evidence: list[dict], repair=False) -> list[dict]:
                 "text": row["text"],
                 **(
                     {
-                        "source_locations": row["source_locations"],
+                        "source_locations": prompt_locations(row, compact),
                         "extraction_warnings": row.get("extraction_warnings", []),
                     }
                     if "source_locations" in row
@@ -93,6 +109,7 @@ def context(
     parents: dict[str, dict] | None = None,
     *,
     check_external: bool = True,
+    compact: bool = False,
 ) -> list[dict]:
     selected = []
     for row in candidates[:5]:
@@ -138,13 +155,39 @@ def context(
             if expansion == "parent":
                 item["retrieval_routes"] = row.get("routes", {})
             proposal = selected + [item]
-            if input_upper_bound(messages(question, proposal)) <= limit:
+            if input_upper_bound(messages(question, proposal, compact=compact)) <= limit:
                 selected = proposal
                 break
     if candidates and not selected:
         raise RagError("context_budget_exceeded", "完整证据片段无法放入当前输入预算。", 422)
     if check_external:
         ensure_external_permission(selected)
+    return selected
+
+
+def compact_context(question, candidates, limit, parents):
+    """Reserve space for ranked child evidence before expanding any one parent."""
+    # An exact named source takes precedence over generic hits within the fused Top 5.
+    top = sorted(candidates[:5], key=lambda row: "structured_focus" not in row.get("routes", {}))
+    selected = context(question, top, limit, check_external=False, compact=True)
+    if parents is None:
+        return selected
+    # Use the same mapping validation and grouping as the normal expansion path.
+    expanded = context(question, top, float("inf"), parents, check_external=False, compact=True)
+    selected = [{**row, "context_expansion": "child_fallback"} for row in selected]
+    for parent in expanded:
+        ids = parent["retrieved_child_chunk_ids"]
+        positions = [i for i, row in enumerate(selected) if row["chunk_id"] in ids]
+        if not positions:
+            continue
+        proposal = [
+            parent if i == positions[0] else row
+            for i, row in enumerate(selected)
+            if i not in positions[1:]
+        ]
+        proposal = [{**row, "evidence_id": f"E{i}"} for i, row in enumerate(proposal, 1)]
+        if input_upper_bound(messages(question, proposal, compact=True)) <= limit:
+            selected = proposal
     return selected
 
 

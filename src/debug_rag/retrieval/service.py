@@ -5,13 +5,14 @@ from collections import Counter
 
 from debug_rag.errors import RagError
 from debug_rag.generation.grounding import (
+    compact_context,
     context,
     ensure_external_permission,
     messages,
     validate_answer,
 )
 from debug_rag.retrieval.indexing import load_artifact, published_snapshot, snapshot
-from debug_rag.retrieval.lexical import bm25_search, fuse
+from debug_rag.retrieval.lexical import bm25_search, fuse, structured_focus
 from debug_rag.retrieval.rerank import validate_ranking
 
 
@@ -77,6 +78,10 @@ class RagService:
             )
             suffix = "" if index == 0 else "_rewrite"
             routes.update({name + suffix: hits for name, hits in recalled.items()})
+        if profile == "light" and self.settings.structured_recall_enabled:
+            focused = structured_focus(by_id, question, allowed)
+            if focused:
+                routes["structured_focus"] = focused
         fused = fuse(routes, k=self.settings.rrf_k)
         candidates = [{**by_id[row["chunk_id"]], **row} for row in fused]
         if enhanced and self.settings.rerank_enabled:
@@ -251,14 +256,23 @@ class RagService:
                 self.engine, kb_id, result["generation_id"], include_parents=True
             )
             parents = {c["chunk_id"]: c for c in all_chunks if c["kind"] == "parent"}
-        selected = context(
-            question,
-            candidates,
-            self.settings.max_input_tokens,
-            parents=parents,
-            check_external=False,
+        compact = self.settings.compact_context_enabled and any(
+            "source_locations" in row for row in candidates[:5]
         )
+        if compact:
+            selected = compact_context(
+                question, candidates, self.settings.max_input_tokens, parents
+            )
+        else:
+            selected = context(
+                question,
+                candidates,
+                self.settings.max_input_tokens,
+                parents=parents,
+                check_external=False,
+            )
         base["context"] = selected
+        base["trace"]["context_strategy"] = "children_then_expand" if compact else "parent_first"
         base["trace"]["selected_context_count"] = len(selected)
         represented = {
             identity for row in selected for identity in row["retrieved_child_chunk_ids"]
@@ -286,7 +300,12 @@ class RagService:
         ensure_external_permission(selected)
         for attempt in range(2):
             generated = self.generator.complete(
-                messages(question, selected, repair=bool(attempt)),
+                messages(
+                    question,
+                    selected,
+                    repair=bool(attempt),
+                    compact=base["trace"]["context_strategy"] == "children_then_expand",
+                ),
                 purpose="answer" if attempt == 0 else "citation_repair",
             )
             base["api_calls"].append(

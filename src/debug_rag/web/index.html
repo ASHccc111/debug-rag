@@ -16,6 +16,10 @@
     .error{color:#a02727;white-space:pre-wrap}.answer{white-space:pre-wrap}.source{border-top:1px solid #e1e6ea;padding:16px 0}
     .source:first-child{border:0}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f7f9;padding:14px;font:14px/1.7 ui-monospace,monospace}
     summary{cursor:pointer;color:#145d6d}dialog{width:min(850px,94vw);max-height:85vh;border:1px solid #9badb9;border-radius:10px;padding:24px}dialog::backdrop{background:#172b3870}
+    .parse-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+    .parse-grid img{width:100%;border:1px solid #d9e1e7}.parse-grid pre{max-height:62vh;overflow:auto}
+    select{font:inherit;padding:6px;margin:6px 0 10px}
+    @media(max-width:720px){.parse-grid{grid-template-columns:1fr}}
     @media(max-width:600px){main{margin-top:24px}section{padding:16px}h1{font-size:25px}button{margin-bottom:8px}}
   </style>
 </head>
@@ -44,7 +48,20 @@
   </section>
   <section aria-labelledby="maintenance-title">
     <h2 id="maintenance-title">知识库维护</h2>
-    <p class="muted">根据上次导入的完整资料重建并发布本地索引。新增、替换或移除资料后，先通过 CLI 重新导入。失败或中断时保留原来已发布的知识库。</p>
+    <details id="parse-panel"><summary>提交并审核 PDF 或 DOCX</summary>
+      <p class="muted">使用上方的知识库。逐份上传并审核后，勾选本次完整资料集。每份文件最多 20 MiB，资料仅限本机处理。</p>
+      <form id="upload-form">
+        <label for="upload-file">原件</label><input type="file" id="upload-file" accept=".pdf,.docx" required>
+        <label for="upload-snapshot">资料版本</label><input id="upload-snapshot" value="debug-upload-v1" pattern="[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}" required>
+        <label for="upload-kind">资料类型</label><select id="upload-kind"><option value="simulated">模拟资料</option><option value="business">业务资料</option></select>
+        <button type="submit" id="upload-button">提交后台解析</button>
+      </form>
+      <p id="parse-notice" role="status"></p>
+      <div id="parse-jobs"></div>
+      <label class="option"><input type="checkbox" id="replace-batch">确认用选中的草稿替换该库的完整资料集</label>
+      <button type="button" id="prepare-batch" disabled>准备选中的资料</button>
+    </details>
+    <p class="muted">根据上次准备的完整资料重建并发布本地索引。失败或中断时保留原来已发布的知识库。</p>
     <button type="button" id="build">重建并发布本地索引</button>
     <p id="job-notice" role="status" class="muted"></p>
     <div id="jobs"></div>
@@ -57,6 +74,22 @@
   <p class="muted">“已交付”仅表示模拟版本能力；检索分数不是答案正确概率。<a href="/docs">API 文档</a></p>
 </main>
 <dialog id="source-dialog"><button id="close-dialog">关闭</button><h2 id="source-title">引用原文</h2><pre id="source-text"></pre></dialog>
+<dialog id="parse-dialog">
+  <button type="button" id="close-parse">关闭</button>
+  <h2 id="draft-title">解析草稿审核</h2>
+  <a id="download-original" download>下载原件</a>
+  <p id="draft-warnings" class="muted"></p>
+  <div class="parse-grid">
+    <div id="draft-preview" hidden>
+      <label for="preview-page">原件页面</label><select id="preview-page"></select>
+      <img id="preview-image" alt="原件页面预览">
+    </div>
+    <div><h3>提取文本</h3><pre id="draft-text"></pre></div>
+  </div>
+  <label id="accept-label" class="option"><input id="accept-incomplete" type="checkbox">已核对原件，并接受上述已知缺失</label>
+  <button type="button" class="primary" id="review-draft">确认审核</button>
+  <p id="review-notice" role="status"></p>
+</dialog>
 <script>
   const $ = id => document.getElementById(id);
   let remoteIndex=false, jobTimer, jobsActive=false, displayedGeneration=null, displayedKb=null;
@@ -164,8 +197,103 @@
     }catch(error){$('job-notice').textContent=error.message;}
     finally{$('build').disabled=remoteIndex;}
   }
+  let parseTimer, parseRequest=0, reviewJob=null;
+  const selectedDrafts=new Set();
+  const parseState={pending:'等待执行',running:'解析中',needs_review:'待核对',reviewed:'已核对',failed:'失败',interrupted:'已中断'};
+  const parseBase='/api/v1/parse-jobs';
+  const parsePath=(id,action)=>parseBase+'/'+encodeURIComponent(id)+(action?'/'+action:'');
+  const syncPrepare=()=>{$('prepare-batch').disabled=selectedDrafts.size===0;};
+  async function refreshParses(){
+    clearTimeout(parseTimer);
+    if(!$('parse-panel').open) return;
+    const request=++parseRequest, kb=$('kb').value;
+    try{
+      const data=await api(parseBase+'?kb_id='+encodeURIComponent(kb));
+      if(request!==parseRequest||kb!==$('kb').value) return;
+      const approved=new Set(data.jobs.filter(job=>job.status==='reviewed').map(job=>job.job_id));
+      for(const id of selectedDrafts) if(!approved.has(id)) selectedDrafts.delete(id);
+      const rows=data.jobs.map(job=>{
+        const row=document.createElement('p'), label=document.createElement('label');
+        label.className='option';
+        if(job.status==='reviewed'){
+          const box=document.createElement('input');
+          box.type='checkbox';box.checked=selectedDrafts.has(job.job_id);
+          box.onchange=()=>{box.checked?selectedDrafts.add(job.job_id):selectedDrafts.delete(job.job_id);syncPrepare();};
+          label.append(box);
+        }
+        label.append(document.createTextNode(job.request.filename+' · '+(parseState[job.status]||job.status)+(job.error_code?' · '+job.error_code:'')));
+        row.append(label);
+        if(job.status==='needs_review'||job.status==='reviewed'){
+          const button=document.createElement('button');button.type='button';button.textContent='查看草稿';
+          button.onclick=()=>showDraft(job);row.append(button);
+        }
+        if(job.retryable){
+          const button=document.createElement('button');button.type='button';button.textContent='重试解析';
+          button.onclick=async()=>{
+            try{await api(parsePath(job.job_id,'retry'),{});await refreshParses();}
+            catch(error){$('parse-notice').textContent=error.message;}
+          };row.append(button);
+        }
+        return row;
+      });
+      $('parse-jobs').replaceChildren(...rows);syncPrepare();
+      if(data.jobs.some(job=>job.status==='pending'||job.status==='running')) parseTimer=setTimeout(refreshParses,1000);
+    }catch(error){$('parse-notice').textContent=error.message;}
+  }
+  async function showDraft(job){
+    try{
+      const draft=await api(parsePath(job.job_id,'draft'));
+      reviewJob=job.job_id;
+      $('draft-title').textContent=job.request.filename;
+      $('download-original').href=parsePath(job.job_id,'original');
+      $('draft-text').textContent=draft.text;
+      $('draft-warnings').textContent='解析警告 · '+(draft.warnings.join('、')||'无');
+      $('review-notice').textContent='';$('accept-incomplete').checked=false;
+      $('accept-label').hidden=!draft.warnings.length||job.status==='reviewed';
+      $('review-draft').hidden=job.status==='reviewed';
+      $('draft-preview').hidden=!draft.page_previews.length;
+      const pages=$('preview-page');
+      pages.replaceChildren(...draft.page_previews.map(file=>{
+        const n=file.slice(5,-4);return new Option('第 '+n+' 页',n);
+      }));
+      pages.onchange=()=>{$('preview-image').src=parsePath(job.job_id,'pages/'+pages.value);};
+      if(pages.options.length) pages.onchange();
+      else $('preview-image').removeAttribute('src');
+      $('parse-dialog').showModal();
+    }catch(error){$('parse-notice').textContent=error.message;}
+  }
+  $('upload-form').onsubmit=async event=>{
+    event.preventDefault();
+    const file=$('upload-file').files[0];if(!file) return;
+    $('upload-button').disabled=true;
+    try{
+      const params=new URLSearchParams({kb_id:$('kb').value,filename:file.name,snapshot:$('upload-snapshot').value,data_kind:$('upload-kind').value});
+      const response=await fetch(parseBase+'?'+params,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:file});
+      const data=await response.json();
+      if(!response.ok) throw new Error(data.error?.message||'提交失败（'+response.status+'）');
+      $('parse-notice').textContent='解析任务已提交。';$('upload-file').value='';await refreshParses();
+    }catch(error){$('parse-notice').textContent=error.message;}
+    finally{$('upload-button').disabled=false;}
+  };
+  $('review-draft').onclick=async()=>{
+    $('review-draft').disabled=true;
+    try{await api(parsePath(reviewJob,'review'),{accept_incomplete:$('accept-incomplete').checked});$('parse-dialog').close();await refreshParses();}
+    catch(error){$('review-notice').textContent=error.message;}
+    finally{$('review-draft').disabled=false;}
+  };
+  $('prepare-batch').onclick=async()=>{
+    $('prepare-batch').disabled=true;
+    try{
+      await api(parseBase+'/prepare',{kb_id:$('kb').value,job_ids:[...selectedDrafts],replace_existing:$('replace-batch').checked});
+      $('parse-notice').textContent='完整资料集已准备。点击下方「重建并发布本地索引」使其生效。';
+      selectedDrafts.clear();$('replace-batch').checked=false;await refreshParses();
+    }catch(error){$('parse-notice').textContent=error.message;}
+    finally{syncPrepare();}
+  };
+  $('parse-panel').ontoggle=refreshParses;
+  $('close-parse').onclick=()=>$('parse-dialog').close();
   $('form').onsubmit=event=>{event.preventDefault();run('search');};
-  $('ask').onclick=()=>run('chat');$('kb').onchange=refresh;
+  $('ask').onclick=()=>run('chat');$('kb').onchange=()=>{selectedDrafts.clear();$('replace-batch').checked=false;refresh();refreshParses();};
   $('preview').onclick=()=>run('context');
   $('advanced').onclick=()=>run('search/advanced');
   $('remote-search').onclick=()=>run('search',true);

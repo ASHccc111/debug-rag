@@ -153,6 +153,18 @@ class IndexJob(Base):
     )
 
 
+class ParseJob(Base):
+    __tablename__ = "parse_jobs"
+    job_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    kb_id: Mapped[str] = mapped_column(String(100), index=True)
+    status: Mapped[str] = mapped_column(String(30))
+    error_code: Mapped[str | None] = mapped_column(String(100))
+    request_json: Mapped[dict] = mapped_column(JSON)
+    result_json: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 def create_database(path: Path) -> Engine:
     path.parent.mkdir(parents=True, exist_ok=True)
     engine = create_engine(

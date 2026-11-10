@@ -2,10 +2,11 @@
 
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
@@ -14,6 +15,7 @@ from debug_rag.components import components
 from debug_rag.diagnostics import readiness
 from debug_rag.errors import RagError
 from debug_rag.jobs import JobManager
+from debug_rag.parse_jobs import ParseJobs
 from debug_rag.retrieval.indexing import snapshot
 from debug_rag.settings import PROJECT_ROOT, Settings
 from debug_rag.storage.sqlite import IndexGeneration, active_generation, create_database
@@ -33,6 +35,16 @@ class EnhancedQuestion(Question):
 class BuildRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     kb_id: str = Field(default="demo-debug", min_length=1, max_length=100)
+
+
+class ParseReview(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    accept_incomplete: bool = False
+
+
+class PrepareUpload(BuildRequest):
+    job_ids: list[str] = Field(min_length=1, max_length=20)
+    replace_existing: bool = False
 
 
 def local_management(request: Request):
@@ -65,6 +77,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.builder, app.state.rag, app.state.ledger = components(config, engine)
         app.state.jobs = JobManager(config, engine, app.state.builder)
         app.state.recovered_jobs = app.state.jobs.recover()
+        app.state.parse_jobs = ParseJobs(config, engine)
+        app.state.parse_jobs.recover()
         try:
             yield
         finally:
@@ -175,6 +189,72 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/v1/index-jobs")
     def jobs(kb_id: str = Query(default=config.kb_id, min_length=1, max_length=100)):
         return {"jobs": app.state.jobs.list(kb_id)}
+
+    @app.get("/api/v1/parse-jobs")
+    def parse_jobs(request: Request, kb_id: str = Query(min_length=1, max_length=100)):
+        local_management(request)
+        return {"jobs": app.state.parse_jobs.list(kb_id)}
+
+    @app.post("/api/v1/parse-jobs", status_code=202)
+    async def upload(
+        request: Request,
+        kb_id: str = Query(min_length=1, max_length=100),
+        filename: str = Query(min_length=5, max_length=180),
+        snapshot: str = Query(pattern=r"^[a-zA-Z0-9][a-zA-Z0-9._-]{0,99}$"),
+        data_kind: Literal["simulated", "business"] = "simulated",
+    ):
+        from datetime import date
+        from hashlib import sha256
+
+        local_management(request)
+        if request.headers.get("content-type") != "application/octet-stream":
+            raise RagError("unsupported_upload_type", "请直接提交文档二进制。", 415)
+        metadata = {
+            "source_key": "upload-" + sha256(filename.casefold().encode()).hexdigest()[:32],
+            "title": Path(filename).stem,
+            "app_snapshot": snapshot,
+            "data_kind": data_kind,
+            "feature_status": "delivered",
+            "updated_at": date.today().isoformat(),
+            "external_processing_allowed": False,
+        }
+        return await app.state.parse_jobs.upload(kb_id, filename, metadata, request.stream())
+
+    @app.get("/api/v1/parse-jobs/{job_id}")
+    def parse_status(job_id: str, request: Request):
+        local_management(request)
+        return app.state.parse_jobs.get(job_id)
+
+    @app.post("/api/v1/parse-jobs/{job_id}/retry", status_code=202)
+    def retry_parse(job_id: str, request: Request):
+        local_management(request)
+        return app.state.parse_jobs.retry(job_id)
+
+    @app.get("/api/v1/parse-jobs/{job_id}/draft")
+    def parse_draft(job_id: str, request: Request):
+        local_management(request)
+        return app.state.parse_jobs.draft(job_id)
+
+    @app.get("/api/v1/parse-jobs/{job_id}/original")
+    def parse_original(job_id: str, request: Request):
+        local_management(request)
+        path, filename = app.state.parse_jobs.original(job_id)
+        return FileResponse(path, filename=filename, media_type="application/octet-stream")
+
+    @app.get("/api/v1/parse-jobs/{job_id}/pages/{number}")
+    def parse_page(job_id: str, number: int, request: Request):
+        local_management(request)
+        return FileResponse(app.state.parse_jobs.page(job_id, number), media_type="image/png")
+
+    @app.post("/api/v1/parse-jobs/{job_id}/review")
+    def review_parse(job_id: str, body: ParseReview, request: Request):
+        local_management(request)
+        return app.state.parse_jobs.review(job_id, body.accept_incomplete)
+
+    @app.post("/api/v1/parse-jobs/prepare")
+    def prepare_uploads(body: PrepareUpload, request: Request):
+        local_management(request)
+        return app.state.parse_jobs.prepare(body.kb_id, body.job_ids, body.replace_existing)
 
     @app.get("/api/v1/index-jobs/{job_id}")
     def job(job_id: str):
