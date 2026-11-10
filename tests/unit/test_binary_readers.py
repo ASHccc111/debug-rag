@@ -180,7 +180,7 @@ def pdf(path, *, scan=False, encrypted=False):
         for point, text in [
             ((50, 100), "Status"),
             ((210, 100), "Action"),
-            ((50, 140), "Cancel"),
+            ((50, 140), "export.cancel_state"),
             ((210, 140), "Clean temporary copy"),
         ]:
             page.insert_text(point, text, fontsize=10)
@@ -200,16 +200,67 @@ def test_pdf_text_table_page_bbox_and_preview(tmp_path):
     parsed = parse_binary(path)
     tables = [block for block in parsed.blocks if block["kind"] == "table"]
     assert len(tables) == 1
+    assert tables[0]["cells"][1][0] == "export.cancel_state"
     assert tables[0]["cells"][1][1] == "Clean temporary copy"
     assert tables[0]["locator"]["page"] == 1 and len(tables[0]["locator"]["bbox"]) == 4
     assert not any(
-        block["kind"] == "paragraph" and block["text"] == "Cancel" for block in parsed.blocks
+        block["kind"] == "paragraph" and block["text"] == "export.cancel_state"
+        for block in parsed.blocks
     )
     assert parsed.assets["page-1.png"].startswith(b"\x89PNG")
     exported = export_document(path, tmp_path / "out")
     canonical = Path(exported["document"])
     review_document(canonical, accept_incomplete=True)
     assert load_source(canonical.parent)[0].origin["original"] == path.read_bytes()
+
+
+def test_pdf_vector_arrow_direction_and_source_locations(tmp_path):
+    pymupdf = pytest.importorskip("pymupdf")
+    path = tmp_path / "flow.pdf"
+    with pymupdf.open() as document:
+        page = document.new_page()
+        for box, point, label in (
+            ((40, 60, 160, 100), (60, 85), "Stop task"),
+            ((40, 150, 160, 190), (60, 175), "Check status"),
+            ((210, 150, 330, 190), (230, 175), "Other task"),
+        ):
+            page.draw_rect(pymupdf.Rect(box))
+            page.insert_text(point, label)
+        page.draw_line((100, 150), (100, 104))
+        page.draw_polyline(
+            [(95, 107), (105, 107), (100, 100), (95, 107)], color=None, fill=(0, 0, 0)
+        )
+        page.draw_line((160, 170), (210, 170))
+        document.save(path)
+    sidecar(path)
+
+    exported = export_document(path, tmp_path / "out")
+    canonical = Path(exported["document"])
+    review_document(canonical, accept_incomplete=True)
+    manifest = load_source(canonical.parent)[0].origin["manifest"]
+    assert manifest["parser_version"] == "structured-binary-v2"
+    edges = [b for b in manifest["blocks"] if b["kind"] == "diagram_edge"]
+    assert [edge["text"] for edge in edges] == ["Check status → Stop task"]
+    assert edges[0]["locator"] == {
+        "format": "pdf",
+        "page": 1,
+        "bbox": [95.0, 100.0, 105.0, 150.0],
+        "from_bbox": [40.0, 150.0, 160.0, 190.0],
+        "to_bbox": [40.0, 60.0, 160.0, 100.0],
+    }
+
+
+def test_old_pdf_parser_bundle_still_loads(tmp_path):
+    exported = export_document(pdf(tmp_path / "legacy.pdf"), tmp_path / "out")
+    canonical = Path(exported["document"])
+    manifest_path = Path(exported["manifest"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["parser_version"] = "structured-binary-v1"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    review_document(canonical, accept_incomplete=True)
+    assert load_source(canonical.parent)[0].origin["manifest"]["parser_version"] == (
+        "structured-binary-v1"
+    )
 
 
 def test_scan_only_pdf_requires_ocr_and_cannot_be_ingested_as_text(tmp_path):

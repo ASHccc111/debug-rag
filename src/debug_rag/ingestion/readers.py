@@ -12,7 +12,10 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from zipfile import BadZipFile, ZipFile
 
+from debug_rag.ingestion.pdf_structure import diagram_edges, table_cells
+
 VERSION = "structured-binary-v1"
+PDF_VERSION = "structured-binary-v2"
 ORIGIN_MARKER = "<!-- debug-rag-structured-source: required-origin-v1 -->"
 MAX_BINARY = 20 * 1024 * 1024
 MAX_EXPANDED = 100 * 1024 * 1024
@@ -205,9 +208,9 @@ def read_pdf(path):
                 result.add("heading", f"第 {number} 页", {"format": "pdf", "page": number}, level=1)
                 tables = page.find_tables().tables
                 areas = [pymupdf.Rect(table.bbox) for table in tables]
-                ordered = []
+                ordered, lines = [], []
                 for table_id, table in enumerate(tables, 1):
-                    cells = table.extract()
+                    cells = table_cells(page, table)
                     text = "\n".join(
                         f"第 {i} 行："
                         + "；".join(
@@ -241,6 +244,7 @@ def read_pdf(path):
                             continue
                         text = "".join(span["text"] for span in line["spans"])
                         if text.strip():
+                            lines.append((rect, text))
                             ordered.append(
                                 (
                                     rect.y0,
@@ -251,6 +255,8 @@ def read_pdf(path):
                                     {},
                                 )
                             )
+                drawings = page.get_drawings()
+                ordered.extend(diagram_edges(drawings, lines, areas, number))
                 for _, _, kind, text, locator, extra in sorted(
                     ordered, key=lambda row: (row[0], row[1])
                 ):
@@ -271,7 +277,7 @@ def read_pdf(path):
                     result.warnings.append("images_require_ocr_or_manual_description")
                 if len(page.get_text().strip()) < 20:
                     result.warnings.append(f"page_{number}_requires_ocr_review")
-                if page.get_drawings():
+                if drawings:
                     result.warnings.append("vector_graphics_require_visual_review")
                 # Bounded page previews for human/OCR review; no external model call.
                 if page.rect.width * page.rect.height > 12_000_000:
@@ -356,7 +362,7 @@ def export_document(source, output):
         for name, data in parsed.assets.items():
             (assets / name).write_bytes(data)
     manifest = {
-        "parser_version": VERSION,
+        "parser_version": PDF_VERSION if source.suffix.lower() == ".pdf" else VERSION,
         "original_file": original_name,
         "original_sha256": digest(original),
         "canonical_sha256": digest(content),
@@ -405,7 +411,7 @@ def load_origin(path, raw, *, require_review=True):
         if (
             manifest["canonical_sha256"] != digest(raw.encode("utf-8"))
             or manifest["original_sha256"] != digest(original)
-            or manifest["parser_version"] != VERSION
+            or manifest["parser_version"] not in {VERSION, PDF_VERSION}
         ):
             raise ValueError()
         last = 0
