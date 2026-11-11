@@ -6,7 +6,7 @@ from typing import Literal
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Query, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy.orm import Session
 
@@ -14,6 +14,8 @@ from debug_rag import __version__
 from debug_rag.components import components
 from debug_rag.diagnostics import readiness
 from debug_rag.errors import RagError
+from debug_rag.generation.local_vision import LocalVision, prepare_visual, visual_answer
+from debug_rag.generation.visual_evidence import render_page
 from debug_rag.jobs import JobManager
 from debug_rag.parse_jobs import ParseJobs
 from debug_rag.retrieval.indexing import snapshot
@@ -30,6 +32,11 @@ class Question(BaseModel):
 
 class EnhancedQuestion(Question):
     enhanced: bool = False
+
+
+class VisualQuestion(Question):
+    allow_paid: Literal[False] = False
+    include_images: bool = True
 
 
 class BuildRequest(BaseModel):
@@ -75,6 +82,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         engine = create_database(config.sqlite_path)
         app.state.engine = engine
         app.state.builder, app.state.rag, app.state.ledger = components(config, engine)
+        app.state.vision = LocalVision(config)
         app.state.jobs = JobManager(config, engine, app.state.builder)
         app.state.recovered_jobs = app.state.jobs.recover()
         app.state.parse_jobs = ParseJobs(config, engine)
@@ -131,6 +139,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "index_published": bool(generation),
             "retrieval_profile": manifest.get("pipeline", {}).get("profile", "light"),
             "embedding_backend": config.embedding_backend,
+            "local_vision_configured": config.local_vision_model is not None,
             "maintenance_enabled": config.embedding_backend == "local",
             "recovered_job_count": len(app.state.recovered_jobs),
             "app_snapshot": manifest.get("app_snapshot"),
@@ -189,6 +198,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/v1/index-jobs")
     def jobs(kb_id: str = Query(default=config.kb_id, min_length=1, max_length=100)):
         return {"jobs": app.state.jobs.list(kb_id)}
+
+    @app.post("/api/v1/vision/context")
+    def visual_context(question: VisualQuestion, request: Request):
+        local_management(request)
+        base, _ = prepare_visual(
+            app.state.rag,
+            app.state.engine,
+            question.kb_id,
+            question.question,
+            question.include_images,
+        )
+        return base
+
+    @app.post("/api/v1/vision/chat")
+    def chat_visual(question: VisualQuestion, request: Request):
+        local_management(request)
+        if config.local_vision_model is None:
+            raise RagError("local_vision_not_configured", "请先配置本机视觉模型。", 503)
+        base, images = prepare_visual(
+            app.state.rag,
+            app.state.engine,
+            question.kb_id,
+            question.question,
+            question.include_images,
+        )
+        return visual_answer(base, images, question.question, app.state.vision)
 
     @app.get("/api/v1/parse-jobs")
     def parse_jobs(request: Request, kb_id: str = Query(min_length=1, max_length=100)):
@@ -290,6 +325,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if row is None:
             raise RagError("source_not_found", "引用原文不存在于此快照。", 404)
         return {"generation_id": generation_id, **row}
+
+    @app.get("/api/v1/sources/{generation_id}/{chunk_id}/pages/{page_number}")
+    def visual_source(
+        generation_id: str,
+        chunk_id: str,
+        page_number: int,
+        request: Request,
+        kb_id: str = Query(default=config.kb_id, min_length=1, max_length=100),
+    ):
+        local_management(request)
+        row = source(generation_id, chunk_id, kb_id)
+        image = render_page(app.state.engine, row, page_number)
+        return Response(image.png, media_type="image/png", headers={"Cache-Control": "no-store"})
 
     return app
 

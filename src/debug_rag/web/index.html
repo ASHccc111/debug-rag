@@ -18,6 +18,7 @@
     summary{cursor:pointer;color:#145d6d}dialog{width:min(850px,94vw);max-height:85vh;border:1px solid #9badb9;border-radius:10px;padding:24px}dialog::backdrop{background:#172b3870}
     .parse-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
     .parse-grid img{width:100%;border:1px solid #d9e1e7}.parse-grid pre{max-height:62vh;overflow:auto}
+    #source-page{display:block;max-width:100%;max-height:65vh;margin:12px auto}#source-page[hidden]{display:none}
     select{font:inherit;padding:6px;margin:6px 0 10px}
     @media(max-width:720px){.parse-grid{grid-template-columns:1fr}}
     @media(max-width:600px){main{margin-top:24px}section{padding:16px}h1{font-size:25px}button{margin-bottom:8px}}
@@ -36,6 +37,8 @@
       <textarea id="question" required maxlength="300" placeholder="例如：如何在调试页展示相机状态，并验证退出后的清理？"></textarea>
       <button type="submit" id="search">仅检索原文 · 本地</button>
       <button type="button" id="preview">查看生成证据 · 本地</button>
+      <button type="button" id="vision-preview">查看图文证据 · 本地</button>
+      <button type="button" id="vision-ask">本地图文问答</button>
       <button type="button" id="advanced">增强检索 · 需 API</button>
       <label class="option"><input id="allow-remote" type="checkbox">本次允许远程向量编码费用（仅远程索引需要）</label>
       <button type="button" id="remote-search" hidden>远程混合检索 · 可能计费</button>
@@ -73,7 +76,7 @@
   </section>
   <p class="muted">“已交付”仅表示模拟版本能力；检索分数不是答案正确概率。<a href="/docs">API 文档</a></p>
 </main>
-<dialog id="source-dialog"><button id="close-dialog">关闭</button><h2 id="source-title">引用原文</h2><pre id="source-text"></pre></dialog>
+<dialog id="source-dialog"><button id="close-dialog">关闭</button><h2 id="source-title">引用原文</h2><img id="source-page" alt="" hidden><pre id="source-text"></pre></dialog>
 <dialog id="parse-dialog">
   <button type="button" id="close-parse">关闭</button>
   <h2 id="draft-title">解析草稿审核</h2>
@@ -93,7 +96,7 @@
 <script>
   const $ = id => document.getElementById(id);
   let remoteIndex=false, jobTimer, jobsActive=false, displayedGeneration=null, displayedKb=null;
-  const actionIds=['search','ask','preview','advanced','remote-search','remote-preview'];
+  const actionIds=['search','ask','preview','vision-preview','vision-ask','advanced','remote-search','remote-preview'];
   async function api(url, body){
     let response;
     try {
@@ -116,6 +119,9 @@
       }
       remoteIndex=state.retrieval_profile==='hybrid'||state.embedding_backend==='viking';
       $('search').disabled=$('preview').disabled=remoteIndex;
+      $('vision-preview').disabled=remoteIndex;
+      $('vision-ask').disabled=remoteIndex||!state.local_vision_configured;
+      $('vision-ask').title=state.local_vision_configured?'':'请配置本机视觉模型';
       $('remote-search').hidden=$('remote-preview').hidden=!remoteIndex;
       $('build').disabled=!state.maintenance_enabled;
       $('job-notice').textContent=state.maintenance_enabled?'本地构建不调用付费模型。':'当前配置使用远程编码；请通过 CLI 显式允许费用后构建，页面不会启动收费构建。';
@@ -127,9 +133,17 @@
   }
   async function showSource(data, row){
     try{
-      const path = `/api/v1/sources/${encodeURIComponent(data.generation_id)}/${encodeURIComponent(row.chunk_id)}?kb_id=${encodeURIComponent(data.kb_id)}`;
+      const base = `/api/v1/sources/${encodeURIComponent(data.generation_id)}/${encodeURIComponent(row.chunk_id)}`;
+      const suffix = `?kb_id=${encodeURIComponent(data.kb_id)}`;
+      const path = base+suffix;
       const source=await api(path);
       $('source-title').textContent=source.metadata.title;
+      const page=$('source-page');
+      page.hidden=!row.visual_page;
+      if(row.visual_page){
+        page.alt=`${source.metadata.title} 第 ${row.visual_page} 页`;
+        page.src=base+`/pages/${row.visual_page}`+suffix;
+      }else{page.removeAttribute('src');}
       const provenance=source.source_locations?`\n这是文件提取文本中的位置；原文件位置：\n${JSON.stringify(source.source_locations,null,2)}\n解析待核对项：${(source.extraction_warnings||[]).join('、')||'无'}\n原件 SHA256：${source.original_sha256}`:'';
       $('source-text').textContent=`${source.section_path.join(' / ')}\n行 ${source.start_line}–${source.end_line}；字符 [${source.start_char}, ${source.end_char})\nrevision ${source.revision_id}${provenance}\n\n${source.text}`;
       $('source-dialog').showModal();
@@ -137,6 +151,8 @@
   }
   async function run(mode, remote=false){
     if(!$('form').reportValidity()) return;
+    const isVision=mode.startsWith('vision/');
+    if(remoteIndex&&isVision){$('notice').textContent='请切换到本机检索索引后再使用图文模式。';return;}
     if(remoteIndex&&!remote&&(mode==='search'||mode==='context')){$('notice').textContent='当前是远程索引，请使用标明可能计费的检索或证据预览按钮。';return;}
     if((remote||remoteIndex)&&!$('allow-remote').checked){$('notice').textContent='远程索引需要付费编码问题，请先勾选本次允许费用。';return;}
     for(const id of actionIds) $(id).disabled=true;
@@ -148,17 +164,19 @@
       const data=await api('/api/v1/'+mode,body);
       displayedGeneration=data.generation_id;displayedKb=data.kb_id;
       const isSearch=mode==='search'||mode==='search/advanced';
-      $('result-title').textContent=isSearch?'检索原文（尚未生成答案）':mode==='context'?`生成证据预览（${remote?'远程编码':'本地'}）`:`回答 · ${data.status}`;
-      $('answer').textContent=data.answer || (isSearch?`找到 ${data.candidates.length} 个候选，以下展示前 5 个。`:`已按预算选出 ${data.context.length} 段原文证据，未调用生成模型。`);
+      const images=data.image_evidence||[];
+      $('result-title').textContent=isSearch?'检索原文（尚未生成答案）':mode==='context'?`生成证据预览（${remote?'远程编码':'本地'}）`:mode==='vision/context'?'本地图文证据预览':`回答 · ${data.status}`;
+      $('answer').textContent=data.answer || (isSearch?`找到 ${data.candidates.length} 个候选，以下展示前 5 个。`:`已选 ${data.context.length} 段文字证据${isVision?`和 ${images.length} 张原页图像`:''}，未调用生成模型。`);
       $('limitation').textContent=data.limitation || '';
       $('sources').replaceChildren();
-      const rows=isSearch?data.candidates.slice(0,5):data.context;
+      const rows=isSearch?data.candidates.slice(0,5):[...data.context,...images];
       for(const row of rows){
         const card=document.createElement('div');card.className='source';
         const title=document.createElement('h3');title.textContent=`${row.evidence_id?'['+row.evidence_id+'] ':''}${row.metadata.title}`;
-        const meta=document.createElement('p');meta.className='muted';meta.textContent=`${row.section_path.join(' / ')} · ${row.metadata.app_snapshot} · ${row.metadata.data_kind} · ${row.metadata.feature_status} · 行 ${row.start_line}–${row.end_line}${row.context_expansion==='parent'?' · 已扩展父章节':row.context_expansion==='child_fallback'?' · 父章节超限，使用命中片段':''}`;
-        const text=document.createElement('pre');text.textContent=row.text;
-        const button=document.createElement('button');button.textContent='查看引用位置';button.onclick=()=>showSource(data,row);
+        const meta=document.createElement('p');meta.className='muted';meta.textContent=row.visual_page?`PDF 原件 · 第 ${row.visual_page} 页 · ${row.width} × ${row.height}`:`${row.section_path.join(' / ')} · ${row.metadata.app_snapshot} · ${row.metadata.data_kind} · ${row.metadata.feature_status} · 行 ${row.start_line}–${row.end_line}${row.context_expansion==='parent'?' · 已扩展父章节':row.context_expansion==='child_fallback'?' · 父章节超限，使用命中片段':''}`;
+        const text=document.createElement('pre');text.textContent=row.text||'';
+        text.hidden=!!row.visual_page;
+        const button=document.createElement('button');button.textContent=row.visual_page?'查看 PDF 原页':'查看引用位置';button.onclick=()=>showSource(data,row);
         card.append(title,meta,text,button);$('sources').append(card);
       }
       $('trace').textContent=JSON.stringify({generation_id:data.generation_id,...data.trace,api_calls:data.api_calls || []},null,2);
@@ -295,6 +313,8 @@
   $('form').onsubmit=event=>{event.preventDefault();run('search');};
   $('ask').onclick=()=>run('chat');$('kb').onchange=()=>{selectedDrafts.clear();$('replace-batch').checked=false;refresh();refreshParses();};
   $('preview').onclick=()=>run('context');
+  $('vision-preview').onclick=()=>run('vision/context');
+  $('vision-ask').onclick=()=>run('vision/chat');
   $('advanced').onclick=()=>run('search/advanced');
   $('remote-search').onclick=()=>run('search',true);
   $('remote-preview').onclick=()=>run('context',true);

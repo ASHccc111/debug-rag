@@ -236,7 +236,13 @@ class RagService:
         return result
 
     def prepare_context(
-        self, kb_id: str, question: str, *, enhanced: bool = False, allow_paid: bool = False
+        self,
+        kb_id: str,
+        question: str,
+        *,
+        enhanced: bool = False,
+        allow_paid: bool = False,
+        include_top_candidates: bool = False,
     ) -> dict:
         """Preview evidence without answer generation; enhancement is explicitly opt-in."""
         result = self.search(kb_id, question, enhanced=enhanced, allow_paid=allow_paid)
@@ -248,6 +254,8 @@ class RagService:
             "statements": [],
             "context": [],
         }
+        if include_top_candidates:
+            base["top_candidates"] = candidates[:5]
         if not candidates:
             return base
         parents = None

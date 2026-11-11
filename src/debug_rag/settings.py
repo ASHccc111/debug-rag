@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     parent_expansion_enabled: bool = True
     structured_recall_enabled: bool = True
     compact_context_enabled: bool = True
+    local_vision_model: Literal["qwen3-vl:2b-instruct", "qwen3-vl:4b-instruct"] | None = None
+    local_vision_port: int = Field(default=11434, ge=1, le=65535)
+    local_vision_timeout_seconds: float = Field(default=120, gt=0, le=300)
     query_rewrite_enabled: bool = False
     rerank_enabled: bool = False
     rerank_api_key: SecretStr = SecretStr("")
